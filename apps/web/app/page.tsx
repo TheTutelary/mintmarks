@@ -25,12 +25,12 @@ export default function Home() {
           </div>
 
           <h1 className="relative z-10 text-5xl md:text-7xl font-serif font-bold text-neutral-900 tracking-tight leading-[1.1] mb-8">
-            The standard for <br/> 
-            <span className="italic text-brand-600">numismatic excellence.</span>
+            Every coin has a story.<br/> 
+            <span className="italic text-brand-600">We help you discover it.</span>
           </h1>
 
           <p className="relative z-10 text-lg md:text-xl text-neutral-500 max-w-2xl mb-12 font-medium">
-            A cryptographically secured evaluation gallery bridging historical heritage with definitive expert authentication.
+            A paid coin evaluation platform where collectors upload coin photographs, add details, and receive expert-level evaluations covering origin, era, metal, grade, rarity, market value, and historical narrative.
           </p>
 
           <div className="relative z-10 flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-4">

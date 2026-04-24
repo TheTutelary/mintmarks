@@ -13,14 +13,14 @@ export default function AuthLayout({
             MintMarks
           </h1>
           <p className="text-neutral-500 mt-2 text-sm uppercase tracking-widest font-medium">
-            Heraldic Heritage & Evaluation
+            EVERY COIN HAS A STORY
           </p>
         </div>
         <div className="bg-white border border-neutral-200 shadow-coin rounded-3xl p-8">
           {children}
         </div>
         <p className="text-center mt-8 text-neutral-400 text-xs">
-          &copy; 2026 MintMarks.in — All evaluation records are cryptographically secured.
+          &copy; 2026 MintMarks.in — Every evaluation is performed by a vetted numismatic expert.
         </p>
       </div>
     </div>
