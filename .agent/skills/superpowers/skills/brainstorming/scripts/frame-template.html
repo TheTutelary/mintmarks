@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Multi-Channel Dashboard Mockup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>body { font-family: "Inter", sans-serif; background-color: #f9fafb; }</style>
+</head>
+<body class="p-8">
+    <div class="max-w-6xl mx-auto space-y-8">
+        <div class="flex items-center justify-between">
+            <h1 class="text-3xl font-black text-gray-900">Knowledge Bank</h1>
+            <div class="flex items-center space-x-4">
+                <label class="text-sm font-bold text-gray-500 uppercase tracking-wider">Channel:</label>
+                <select class="bg-white border-2 border-gray-100 rounded-xl px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm">
+                    <option>Basant Maheshwari (@bmtheequitydesk)</option>
+                    <option>WeekendInvesting (@AlokJain)</option>
+                    <option>All Channels</option>
+                </select>
+                <button class="bg-indigo-600 text-white font-bold py-2 px-6 rounded-xl">Sync New</button>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="aspect-video bg-gray-200 flex items-center justify-center relative">
+                    <span class="absolute top-2 left-2 bg-indigo-100 text-indigo-700 text-[10px] font-black px-2 py-1 rounded">BM</span>
+                </div>
+                <div class="p-4"><h3 class="font-bold">Stopping the War...</h3></div>
+            </div>
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="aspect-video bg-gray-200 flex items-center justify-center relative">
+                    <span class="absolute top-2 left-2 bg-emerald-100 text-emerald-700 text-[10px] font-black px-2 py-1 rounded">WI</span>
+                </div>
+                <div class="p-4"><h3 class="font-bold">Weekly Market Roundup...</h3></div>
+            </div>
+        </div>
+        <div class="bg-zinc-900 rounded-3xl p-8 text-zinc-300">
+            <h2 class="text-white text-xl font-bold mb-6">Proposed Storage Structure</h2>
+            <pre class="font-mono text-sm">
+.archive/
+├── @bmtheequitydesk/
+│   ├── 2026/03/kur0j56xMUE/
+└── @AlokJain/
+    ├── 2026/04/vID123abc/
+            </pre>
+        </div>
+    </div>
+</body>
+</html>
