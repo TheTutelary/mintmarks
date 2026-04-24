@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 export default function AuthLayout({
   children,
@@ -9,9 +10,11 @@ export default function AuthLayout({
     <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-serif font-bold text-neutral-900 tracking-tight italic">
-            MintMarks
-          </h1>
+          <Link href="/" className="inline-block hover:opacity-80 transition-opacity">
+            <h1 className="text-4xl font-serif font-bold text-neutral-900 tracking-tight italic">
+              MintMarks
+            </h1>
+          </Link>
           <p className="text-neutral-500 mt-2 text-sm uppercase tracking-widest font-medium">
             EVERY COIN HAS A STORY
           </p>

@@ -65,10 +65,52 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="bg-neutral-900 text-neutral-400 py-12 px-4 border-t border-brand-900/50">
-        <div className="container mx-auto text-center">
-          <p className="font-serif italic text-2xl text-neutral-50 mb-4 opacity-50">MintMarks</p>
-          <p className="text-sm">© 2026 MintMarks.in — Heritage Craft Design System.</p>
+      <footer className="bg-neutral-900 text-neutral-400 py-16 px-4 border-t border-brand-900/50">
+        <div className="container mx-auto max-w-7xl">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12 border-b border-neutral-800 pb-12">
+            <div className="col-span-1 md:col-span-1">
+              <Link href="/" className="inline-block">
+                <p className="font-serif italic text-3xl text-brand-500 mb-4">MintMarks</p>
+              </Link>
+              <p className="text-sm text-neutral-400 max-w-xs">
+                The authoritative evaluation gallery where every coin's story is cryptographically secured and definitively authenticated.
+              </p>
+            </div>
+            
+            <div className="col-span-1">
+              <h3 className="text-neutral-50 font-bold mb-4">Platform</h3>
+              <ul className="space-y-3 text-sm">
+                <li><Link href="/auth/register" className="hover:text-brand-500 transition-colors">Submit a Coin</Link></li>
+                <li><Link href="#how-it-works" className="hover:text-brand-500 transition-colors">Evaluation Process</Link></li>
+                <li><Link href="#pricing" className="hover:text-brand-500 transition-colors">Pricing & Credits</Link></li>
+                <li><Link href="/auth/login" className="hover:text-brand-500 transition-colors">Curator Login</Link></li>
+              </ul>
+            </div>
+            
+            <div className="col-span-1">
+              <h3 className="text-neutral-50 font-bold mb-4">Collection</h3>
+              <ul className="space-y-3 text-sm">
+                <li><Link href="#gallery" className="hover:text-brand-500 transition-colors">Verified Gallery</Link></li>
+                <li><Link href="#recent" className="hover:text-brand-500 transition-colors">Recent Additions</Link></li>
+                <li><Link href="#experts" className="hover:text-brand-500 transition-colors">Our Experts</Link></li>
+              </ul>
+            </div>
+            
+            <div className="col-span-1">
+              <h3 className="text-neutral-50 font-bold mb-4">MintMarks</h3>
+              <ul className="space-y-3 text-sm">
+                <li><Link href="#about" className="hover:text-brand-500 transition-colors">About Us</Link></li>
+                <li><Link href="#contact" className="hover:text-brand-500 transition-colors">Contact Support</Link></li>
+                <li><Link href="#terms" className="hover:text-brand-500 transition-colors">Terms of Service</Link></li>
+                <li><Link href="#privacy" className="hover:text-brand-500 transition-colors">Privacy Policy</Link></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="flex flex-col md:flex-row justify-between items-center text-xs">
+            <p>© 2026 MintMarks.in — Heritage Craft Design System.</p>
+            <p className="mt-2 md:mt-0 opacity-70">Every evaluation is performed by a vetted numismatic expert.</p>
+          </div>
         </div>
       </footer>
     </div>
