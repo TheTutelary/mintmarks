@@ -1,0 +1,2057 @@
+# MintMarks.in — Complete Project Blueprint
+ 
+> **Purpose of this document:** A portable, self-contained reference and generation prompt covering every technical decision, design principle, color value, component pattern, feature specification, database schema, API design, payment flow, and architectural detail for the MintMarks.in coin evaluation platform. Hand this document to any developer or AI agent and they should be able to generate the complete repository from scratch.
+ 
+---
+ 
+## Table of Contents
+ 
+1. [Project Identity](#1-project-identity)
+2. [Technology Stack](#2-technology-stack)
+3. [Design Philosophy](#3-design-philosophy)
+4. [Color System — Full Token Reference](#4-color-system--full-token-reference)
+5. [Typography System](#5-typography-system)
+6. [Spacing, Radius & Shadows](#6-spacing-radius--shadows)
+7. [Surface & Layout Tokens](#7-surface--layout-tokens)
+8. [Dark Mode Strategy](#8-dark-mode-strategy)
+9. [Responsive Design & Mobile Strategy](#9-responsive-design--mobile-strategy)
+10. [Database Schema](#10-database-schema)
+11. [Authentication & Authorization](#11-authentication--authorization)
+12. [API Design](#12-api-design)
+13. [Coin Submission Flow](#13-coin-submission-flow)
+14. [Expert Evaluation Workflow](#14-expert-evaluation-workflow)
+15. [Payment System](#15-payment-system)
+16. [Showcase & Public Gallery](#16-showcase--public-gallery)
+17. [Component Architecture](#17-component-architecture)
+18. [Page Architecture & Routing](#18-page-architecture--routing)
+19. [Mobile App Architecture (React Native / Expo)](#19-mobile-app-architecture-react-native--expo)
+20. [Internationalization (i18n)](#20-internationalization-i18n)
+21. [Notification System](#21-notification-system)
+22. [Testing Strategy](#22-testing-strategy)
+23. [SEO & Metadata](#23-seo--metadata)
+24. [Security Checklist](#24-security-checklist)
+25. [Deployment & DevOps](#25-deployment--devops)
+26. [File Structure Reference](#26-file-structure-reference)
+ 
+---
+ 
+## 1. Project Identity
+ 
+| Property | Value |
+|:---|:---|
+| **Name** | MintMarks |
+| **Domain** | mintmarks.in |
+| **Tagline** | Every coin has a story. We help you discover it. |
+| **Purpose** | A paid coin evaluation platform where collectors upload coin photographs, add details, and receive expert-level evaluations covering origin, era, metal, grade, rarity, market value, and historical narrative. |
+| **Target Audience** | Worldwide — casual coin collectors, serious numismatists, heritage enthusiasts, dealers seeking authentication, and anyone curious about a coin they found. |
+| **Creator** | Sushil Gulati |
+| **License** | Proprietary (paid service) |
+| **Brand Voice** | Authoritative but accessible. Expert, never elitist. Clear, never jargon-heavy. The tone of a knowledgeable friend who happens to be a coin expert. |
+ 
+### Core Tenets
+ 
+1. **Expert-Verified** — Every evaluation is performed by a vetted numismatic expert. No AI-generated evaluations. The human expert is the product.
+2. **Photo-First** — The coin photograph is the primary artifact. The platform is built around capturing, storing, and presenting coin imagery beautifully.
+3. **Transparent Process** — Users can track their coin's evaluation status at every stage. No black boxes.
+4. **Global Reach, Local Trust** — Built for a worldwide audience with i18n-ready architecture. Payment and communication patterns work across borders.
+5. **Progressive Disclosure** — Complex numismatic information is presented in layers. The casual collector sees the headline; the expert sees the depth.
+6. **No Dead-Ends** — Every page leads the user to a concrete action: submit a coin, buy credits, explore the showcase, or learn more.
+ 
+---
+ 
+## 2. Technology Stack
+ 
+### Platform 1: Website
+ 
+| Layer | Technology | Version | Notes |
+|:---|:---|:---|:---|
+| **Framework** | Next.js (App Router) | 15+ | Server components + client components, ISR for showcase pages |
+| **Language** | TypeScript | ^5 | Strict mode enabled across all platforms |
+| **React** | React + React DOM | 19+ | |
+| **CSS Framework** | Tailwind CSS | v4 | CSS Custom Properties bridged via `@theme inline` |
+| **PostCSS** | @tailwindcss/postcss | ^4 | |
+| **Utility Merging** | tailwind-merge + clsx | ^3 / ^2 | Conditional className composition |
+| **Animations** | framer-motion | ^12 | Page transitions, modals, status animations |
+| **Icons** | lucide-react | ^0.5+ | Tree-shakable SVG icons |
+| **i18n** | next-intl | ^4 | Locale routing, message files, rich text |
+| **HTTP Client** | axios or fetch | — | API communication |
+| **Forms** | react-hook-form + zod | ^7 / ^3 | Form validation with schema-based validation |
+| **State** | zustand | ^5 | Lightweight client state (auth, UI state) |
+ 
+### Platform 2: Mobile App
+ 
+| Layer | Technology | Version | Notes |
+|:---|:---|:---|:---|
+| **Framework** | React Native (Expo) | SDK 52+ | Managed workflow, EAS Build for production |
+| **Language** | TypeScript | ^5 | Shared types with website and API |
+| **Navigation** | expo-router | ^4 | File-based routing (mirrors Next.js patterns) |
+| **Camera** | expo-camera | — | Coin photo capture |
+| **Image Picker** | expo-image-picker | — | Gallery selection fallback |
+| **Storage** | expo-secure-store | — | JWT token storage |
+| **HTTP Client** | axios | ^1 | Shared API client |
+| **Forms** | react-hook-form + zod | ^7 / ^3 | Same validation as website |
+| **State** | zustand | ^5 | Shared state patterns |
+| **UI Components** | react-native-paper or custom | — | Material Design base, customized to brand |
+ 
+### Platform 3: Backend API
+ 
+| Layer | Technology | Version | Notes |
+|:---|:---|:---|:---|
+| **Runtime** | Node.js | 20 LTS+ | |
+| **Framework** | Express.js | ^4 | RESTful API |
+| **Language** | TypeScript | ^5 | Shared types package |
+| **ORM** | Prisma | ^6 | Type-safe database access, migrations |
+| **Database** | PostgreSQL | 16+ | Free, open source, full SQL control |
+| **Auth** | jsonwebtoken + bcrypt | ^9 / ^5 | JWT access/refresh tokens, password hashing |
+| **Email** | nodemailer | ^6 | Email verification, notifications (provider-agnostic: SendGrid, SES, SMTP) |
+| **Validation** | zod | ^3 | Request body validation (shared schemas with frontend) |
+| **File Upload** | multer | ^1 | Multipart form handling for coin photos |
+| **Image Storage** | Abstract interface | — | Pluggable: S3, Cloudinary, or local filesystem. Decided later. |
+| **Payments** | razorpay (Node SDK) | ^2 | Razorpay integration for Indian + global payments |
+| **Rate Limiting** | express-rate-limit | ^7 | API protection |
+| **CORS** | cors | ^2 | Cross-origin for web + mobile |
+| **Logging** | winston or pino | ^3 / ^9 | Structured logging |
+ 
+### Shared Package
+ 
+| Layer | Technology | Notes |
+|:---|:---|:---|
+| **Shared Types** | TypeScript package | `@mintmarks/shared` — User, Coin, Evaluation, Payment types shared across all 3 platforms |
+| **Validation Schemas** | Zod schemas | Shared between frontend forms and backend validation |
+| **Constants** | Enums, status codes | Coin statuses, evaluation fields, role definitions |
+ 
+### Testing
+ 
+| Tool | Purpose |
+|:---|:---|
+| **Vitest** | Unit tests for website + API logic |
+| **@testing-library/react** | Component tests (website) |
+| **@testing-library/react-native** | Component tests (mobile) |
+| **Playwright** | E2E browser testing (Chromium, Firefox, WebKit) |
+| **Supertest** | API integration tests |
+| **Prisma** | Test database seeding and migrations |
+ 
+### Maintenance Scripts
+ 
+| Script | Purpose |
+|:---|:---|
+| `npm run dev` | Start Next.js dev server (website) |
+| `npm run dev:api` | Start Express API server (with hot reload via tsx) |
+| `npm run dev:mobile` | Start Expo dev server |
+| `npm run build` | Production build (website) |
+| `npm run build:api` | Compile API TypeScript |
+| `npm run db:migrate` | Run Prisma migrations |
+| `npm run db:seed` | Seed database with sample data |
+| `npm run db:studio` | Open Prisma Studio (database GUI) |
+| `npm test` | Run all unit tests |
+| `npm run test:e2e` | Run Playwright E2E tests |
+| `npm run test:api` | Run API integration tests |
+| `npm run lint` | ESLint across all packages |
+ 
+---
+ 
+## 3. Design Philosophy
+ 
+### "Heritage Craft"
+ 
+The design system is named **"Heritage Craft"** and is built on the principle that coins are artifacts of human civilization — each one carries weight (literal and figurative), history, and craftsmanship. The design must convey:
+ 
+#### Key Principles
+ 
+1. **Warm Authority** — The color palette uses heritage golds, aged bronzes, and warm earth tones. This is a platform where people trust experts with valuable possessions. The design must feel like a well-appointed gallery, not a tech startup.
+ 
+2. **Editorial Quality** — Serif + sans-serif font pairing borrowed from museum catalogs and auction house publications. This signals expertise and trustworthiness — critical for a paid evaluation service.
+ 
+3. **Photo-Centric** — Coin photographs are the hero. Every layout decision prioritizes how coin images are displayed: generous padding around images, neutral backgrounds that don't compete with the coin, and consistent image containers with subtle shadows that mimic physical display cases.
+ 
+4. **Card-Based Information Architecture** — Content is organized into rounded cards (`rounded-3xl`) with borders, subtle shadows, and hover lift effects. Dense evaluation data becomes scannable through clear visual boundaries.
+ 
+5. **Progressive Disclosure** — Evaluation results start with the headline (grade, estimated value) and expand into depth (full history, expert notes, comparison). The casual user sees what they need; the serious collector digs deeper.
+ 
+6. **Semantic Color Discipline** — Colors carry meaning: gold = brand identity and premium, green = success/completed, blue = information/links, amber = pending/warning, red = urgent/error. Never decorative.
+ 
+7. **Subtle Interactivity** — Hover states, transitions, and micro-animations are present everywhere but never flashy. The feeling of a high-quality physical interface: satisfying but restrained.
+ 
+8. **Trust Signals** — Expert credentials, verification badges, evaluation count badges, and "verified expert" indicators are prominent. For a paid service, trust is the conversion mechanism.
+ 
+---
+ 
+## 4. Color System — Full Token Reference
+ 
+All colors are defined as CSS Custom Properties in `globals.css` and bridged to Tailwind v4 via `@theme inline`.
+ 
+### Brand — "Heritage Gold"
+ 
+The primary brand color. A warm, distinguished gold that evokes historic coinage, museum displays, and numismatic tradition.
+ 
+| Token | Hex | Usage |
+|:---|:---|:---|
+| `--brand-50` | `#FFFBEB` | Lightest tint, badge backgrounds, selection highlights |
+| `--brand-100` | `#FEF3C7` | Light card fills, hover backgrounds |
+| `--brand-200` | `#FDE68A` | Hover borders, accent tints |
+| `--brand-300` | `#FCD34D` | Card hover borders, decorative accents |
+| `--brand-400` | `#FBBF24` | Accent elements, star ratings |
+| `--brand-500` | `#F59E0B` | **Primary brand** — logo accent, primary badges |
+| `--brand-600` | `#D97706` | **Primary interactive** — CTAs, links, focus rings |
+| `--brand-700` | `#B45309` | Active states, active nav links, button hovers |
+| `--brand-800` | `#92400E` | Dark brand text on light backgrounds |
+| `--brand-900` | `#78350F` | Deep brand — footer accents, display headings |
+| `--brand-950` | `#451A03` | Deepest brand — footer background, elevated surfaces |
+ 
+### Neutral — "Aged Parchment"
+ 
+Warm neutrals inspired by aged paper, museum walls, and archival materials. Never cold gray.
+ 
+| Token | Hex | Named As | Usage |
+|:---|:---|:---|:---|
+| `--neutral-50` | `#FAFAF7` | Parchment | Page background |
+| `--neutral-100` | `#F5F5F0` | Linen | Section backgrounds, input backgrounds |
+| `--neutral-200` | `#E8E5DE` | Sand | Default borders |
+| `--neutral-300` | `#D6D1C7` | Clay | Strong borders |
+| `--neutral-400` | `#A8A08E` | Khaki | Muted text, placeholders |
+| `--neutral-500` | `#7A7162` | Driftwood | — |
+| `--neutral-600` | `#5C5548` | Walnut | Secondary text, descriptions |
+| `--neutral-700` | `#45403A` | Espresso | — |
+| `--neutral-800` | `#2D2A26` | Charcoal | — |
+| `--neutral-900` | `#1A1815` | Obsidian | Primary body text, headings |
+ 
+### Accent — "Patina Bronze"
+ 
+A secondary accent inspired by the green-brown patina that develops on aged bronze and copper coins. Used for expert/premium elements.
+ 
+| Token | Hex | Usage |
+|:---|:---|:---|
+| `--accent-100` | `#D1FAE5` | Patina tint backgrounds |
+| `--accent-400` | `#34D399` | Patina accent |
+| `--accent-500` | `#10B981` | Patina primary — expert badges, premium indicators |
+| `--accent-600` | `#059669` | Patina interactive |
+| `--accent-700` | `#047857` | Patina active |
+ 
+### Copper Accent
+ 
+For warmth and variety — inspired by copper coinage.
+ 
+| Token | Hex | Usage |
+|:---|:---|:---|
+| `--copper-100` | `#FEE2E2` | Copper tint |
+| `--copper-400` | `#CD7F32` | Copper accent — decorative, secondary brand |
+| `--copper-500` | `#B87333` | Copper primary |
+| `--copper-600` | `#A0522D` | Copper interactive |
+ 
+### Semantic Colors
+ 
+Strict feedback colors for system states.
+ 
+| Category | Token | Hex | Usage |
+|:---|:---|:---|:---|
+| **Success** | `--success` | `#16A34A` | Evaluation complete, payment confirmed |
+| | `--success-tint` | `#DCFCE7` | Success card backgrounds |
+| | `--success-800` | `#166534` | Dark success text |
+| **Warning** | `--warning` | `#D97706` | Pending evaluation, credit low |
+| | `--warning-tint` | `#FEF3C7` | Warning card backgrounds |
+| | `--warning-200` | `#FDE68A` | Warning borders |
+| | `--warning-800` | `#92400E` | Dark warning text |
+| **Danger** | `--danger` | `#DC2626` | Payment failed, evaluation rejected |
+| | `--danger-tint` | `#FEE2E2` | Danger card backgrounds |
+| **Info** | `--info` | `#0284C7` | Informational callouts, tips |
+| | `--info-tint` | `#E0F2FE` | Info card backgrounds |
+| | `--info-800` | `#075985` | Dark info text |
+ 
+---
+ 
+## 5. Typography System
+ 
+### Font Pairing
+ 
+| Role | Font Family | Weight(s) | CSS Variable | Design Rationale |
+|:---|:---|:---|:---|:---|
+| **Headings (Display)** | Playfair Display | 400–700 | `--font-display` / `font-display` | Classic serif with high contrast — evokes auction catalogs, museum signage, and numismatic publications. Signals expertise and heritage. |
+| **Body & UI** | Inter | 400–700 | `--font-sans` / `font-sans` | Modern sans-serif optimized for screen legibility. High x-height, clear at small sizes, excellent for data-dense evaluation forms. |
+ 
+### Type Scale (pixel values)
+ 
+| Token | Size | Usage |
+|:---|:---|:---|
+| `--text-xs` | 11px | Footnotes, micro-labels, fine print |
+| `--text-sm` | 13px | Badges, metadata labels, secondary info |
+| `--text-base` | 15px | Body text |
+| `--text-md` | 17px | Slightly elevated body, card descriptions |
+| `--text-lg` | 20px | Feature descriptions, evaluation summaries |
+| `--text-xl` | 24px | Section subtitles |
+| `--text-2xl` | 30px | Card headings, coin titles |
+| `--text-3xl` | 38px | Section headings |
+| `--text-4xl` | 48px | Page titles (mobile) |
+| `--text-5xl` | 60px | Hero headings (desktop) |
+ 
+### Line Heights
+ 
+| Token | Value | Usage |
+|:---|:---|:---|
+| `--leading-tight` | 1.15 | Display headings |
+| `--leading-snug` | 1.3 | Card titles |
+| `--leading-normal` | 1.6 | Body paragraphs |
+| `--leading-relaxed` | 1.75 | Long-form evaluation text |
+ 
+### Font Weights
+ 
+| Token | Value | Usage |
+|:---|:---|:---|
+| `--weight-normal` | 400 | Body, descriptions |
+| `--weight-medium` | 500 | Nav links, labels, form labels |
+| `--weight-semibold` | 600 | Badges, secondary headings |
+| `--weight-bold` | 700 | CTAs, primary headings, prices |
+ 
+### Typography Conventions
+ 
+- **h1**: `font-display text-4xl md:text-5xl font-bold tracking-tight leading-tight`
+- **h2**: `font-display text-3xl font-bold tracking-tight`
+- **h3**: `font-display text-2xl font-semibold`
+- **Body text**: `font-sans text-base text-neutral-600 leading-normal`
+- **Evaluation data labels**: `font-sans text-sm font-medium text-neutral-400 uppercase tracking-wider`
+- **Evaluation data values**: `font-sans text-lg font-semibold text-neutral-900`
+- **Badges/Chips**: `text-xs font-bold uppercase tracking-wider`
+- **Prices**: `font-sans text-2xl font-bold text-brand-700`
+ 
+---
+ 
+## 6. Spacing, Radius & Shadows
+ 
+### Spacing Scale (Base-4)
+ 
+Strict `4px` base ensures mathematical harmony.
+ 
+| Token | Value |
+|:---|:---|
+| `--space-1` | 4px |
+| `--space-2` | 8px |
+| `--space-3` | 12px |
+| `--space-4` | 16px |
+| `--space-5` | 20px |
+| `--space-6` | 24px |
+| `--space-8` | 32px |
+| `--space-10` | 40px |
+| `--space-12` | 48px |
+| `--space-16` | 64px |
+ 
+### Border Radius
+ 
+| Token | Value | Usage |
+|:---|:---|:---|
+| `--radius-xs` | 6px | Small inputs, micro elements |
+| `--radius-sm` | 8px | Buttons, small cards |
+| `--radius-md` | 12px | Form inputs, dropdown menus |
+| `--radius-lg` | 16px | Medium cards |
+| `--radius-xl` | 24px | **Primary card radius** — content cards, evaluation cards |
+| `--radius-2xl` | 32px | Hero cards, featured showcase items |
+| `--radius-full` | 9999px | Pills, badges, avatars, coin image containers |
+ 
+> **Design Note:** The project overwhelmingly uses `rounded-3xl` (24px) for content cards and `rounded-full` for badges/avatars/coin thumbnails. Coins are circular — the design echoes this with liberal use of `rounded-full`.
+ 
+### Shadows
+ 
+| Token | Value | Usage |
+|:---|:---|:---|
+| `--shadow-xs` | `0 1px 2px rgba(0,0,0,0.05)` | Micro elevation (badges) |
+| `--shadow-sm` | `0 2px 8px rgba(0,0,0,0.06)` | Default cards, buttons |
+| `--shadow-md` | `0 8px 24px rgba(0,0,0,0.08)` | Hover states on cards |
+| `--shadow-lg` | `0 16px 48px rgba(0,0,0,0.10)` | Modal overlays, elevated panels |
+| `--shadow-coin` | `0 4px 16px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)` | **Coin photo display** — simulates a physical coin casting a shadow on a velvet surface |
+ 
+### Transition Tokens
+ 
+| Token | Value | Usage |
+|:---|:---|:---|
+| `--ease-smooth` | `cubic-bezier(0.4, 0, 0.2, 1)` | Default easing |
+| `--duration-fast` | 150ms | Micro-interactions (hover color) |
+| `--duration-base` | 250ms | Standard transitions (border, shadow) |
+| `--duration-slow` | 400ms | Larger animations (modal open, slide-in) |
+ 
+### Focus Ring
+ 
+```css
+--focus-ring: 0 0 0 3px rgba(217, 119, 6, 0.25);
+```
+Brand gold translucent focus ring for accessibility.
+ 
+---
+ 
+## 7. Surface & Layout Tokens
+ 
+### Surface Colors (Light Mode)
+ 
+| Token | Value | Usage |
+|:---|:---|:---|
+| `--bg-page` | `var(--neutral-50)` / `#FAFAF7` | Main page background |
+| `--bg-section` | `var(--neutral-100)` / `#F5F5F0` | Alternating section backgrounds |
+| `--bg-surface` | `#FFFFFF` | Card surfaces |
+| `--bg-shell` | `rgba(255,255,255,0.85)` | Frosted glass nav bar (with `backdrop-blur`) |
+| `--bg-control` | `var(--neutral-100)` | Input backgrounds |
+| `--bg-elevated` | `#FFFFFF` | Modals, popovers, dropdowns |
+| `--bg-footer` | `var(--brand-950)` | Footer (deep warm brown-black) |
+| `--bg-coin-display` | `#1A1815` | Dark background behind coin photos (like velvet display) |
+ 
+### Text Colors (Semantic)
+ 
+| Token | Value | Usage |
+|:---|:---|:---|
+| `--text-primary` | `var(--neutral-900)` / `#1A1815` | Headings and primary body text |
+| `--text-secondary` | `var(--neutral-600)` / `#5C5548` | Descriptions, supporting text |
+| `--text-muted` | `var(--neutral-400)` / `#A8A08E` | Placeholder text, de-emphasized labels |
+| `--text-inverse` | `#FFFFFF` | Text on dark backgrounds |
+| `--text-link` | `var(--brand-600)` / `#D97706` | All interactive links |
+| `--text-price` | `var(--brand-700)` / `#B45309` | Prices, credit amounts |
+ 
+### Border Colors (Semantic)
+ 
+| Token | Value |
+|:---|:---|
+| `--border-subtle` | `rgba(0,0,0,0.06)` |
+| `--border-default` | `var(--neutral-200)` |
+| `--border-strong` | `var(--neutral-300)` |
+| `--border-focus` | `var(--brand-600)` |
+| `--border-gold` | `var(--brand-400)` — Premium/featured card borders |
+ 
+### Layout Constants
+ 
+| Token | Value | Usage |
+|:---|:---|:---|
+| `--max-w-content` | `80rem` (1280px) | Maximum content width |
+| `--max-w-narrow` | `48rem` (768px) | Forms, auth pages, narrow content |
+| `--nav-height` | `64px` | Fixed navbar height |
+| `--coin-image-max` | `400px` | Maximum coin photo display size |
+ 
+---
+ 
+## 8. Dark Mode Strategy
+ 
+Dark mode is implemented via `@media (prefers-color-scheme: dark)` — automatic, following OS preference. No manual toggle in v1.
+ 
+### Dark Mode Overrides
+ 
+| Token | Dark Value |
+|:---|:---|
+| `--bg-page` | `#0F0E0C` |
+| `--bg-section` | `#1A1815` |
+| `--bg-surface` | `#1E1C19` |
+| `--bg-shell` | `rgba(15,14,12,0.85)` |
+| `--bg-control` | `#2A2722` |
+| `--bg-elevated` | `#252320` |
+| `--bg-footer` | `#0A0908` |
+| `--bg-coin-display` | `#0A0908` |
+| `--text-primary` | `#F5F5F0` |
+| `--text-secondary` | `#A8A08E` |
+| `--text-muted` | `#7A7162` |
+| `--text-inverse` | `#1A1815` |
+| `--border-subtle` | `rgba(255,255,255,0.06)` |
+| `--border-default` | `#333028` |
+| `--border-strong` | `#44403A` |
+ 
+> **Key insight:** Only semantic surface/text/border tokens are overridden. Brand golds, patina greens, and semantic feedback colors remain unchanged. Brand identity is consistent across modes.
+ 
+---
+ 
+## 9. Responsive Design & Mobile Strategy
+ 
+### Philosophy
+ 
+**Mobile-first, desktop-optimized.** Every component works on phones first, then progressively enhances. The mobile web experience is critical because many coin collectors will photograph a coin on their phone and want to submit immediately.
+ 
+### Breakpoints
+ 
+| Breakpoint | Min Width | Used For |
+|:---|:---|:---|
+| *(default)* | 0px | Mobile phones — single column, compact padding |
+| `sm:` | 640px | Small tablets — padding bump |
+| `md:` | 768px | **Primary breakpoint** — multi-column grids, desktop nav, form side-by-side |
+| `lg:` | 1024px | Desktop — 3-column grids, sidebar layouts |
+| `xl:` | 1280px | Large desktop — maximum content spread |
+ 
+### Global Padding Strategy
+ 
+```
+px-4 sm:px-6 lg:px-8
+```
+ 
+All major sections constrained by `max-w-7xl mx-auto`.
+ 
+### Navbar — Dual Navigation Model
+ 
+**Desktop (`md:` and above):**
+- Horizontal nav links inline (`hidden md:flex`)
+- Auth state: "Login" / "Sign Up" buttons OR user avatar dropdown
+- Active link: `text-brand-700 font-bold`, inactive: `text-neutral-600`
+ 
+**Mobile (`< md:`):**
+- Hamburger button (44×44px touch target)
+- Slide-out panel: framer-motion from left, spring physics (`damping: 25, stiffness: 200`)
+- Panel: 280px wide, full viewport height (`h-[100dvh]`), includes nav links + auth actions
+- Backdrop: `bg-neutral-900/40 backdrop-blur-sm`, tap to dismiss
+- Touch feedback: `active:scale-95` on hamburger, `active:scale-[0.98]` on nav links
+ 
+### Key Responsive Patterns
+ 
+| Component | Mobile | Desktop |
+|:---|:---|:---|
+| **Coin submission form** | Single column stacked | `md:grid-cols-2` — photo left, details right |
+| **Evaluation results** | Stacked accordion sections | `lg:grid-cols-3` — summary + details + expert card |
+| **Showcase gallery** | Single column, full-width cards | `md:grid-cols-2 lg:grid-cols-3` masonry-style |
+| **Dashboard stats** | 2×2 grid | `md:grid-cols-4` row |
+| **Pricing cards** | Stacked, full-width | `md:grid-cols-3` side-by-side |
+| **Admin tables** | Horizontal scroll with sticky first column | Full-width responsive tables |
+| **Coin photo** | Full-width with 16px padding | Centered, max 400px, dark display background |
+ 
+### Touch Interaction Design
+ 
+| Pattern | Implementation | Why |
+|:---|:---|:---|
+| **Button press** | `active:scale-95` | Physical button depression feel |
+| **Touch targets** | Minimum 44×44px (`w-11 h-11`) | Apple/Google guidelines |
+| **Card tap** | `:hover` triggers on tap | Hover effects become tap-reveal on mobile |
+| **Swipe** | Not implemented in v1 | Avoids conflicts with browser navigation |
+| **Image zoom** | Pinch-to-zoom on coin photos | Critical for examining coin details |
+ 
+### Responsive Typography
+ 
+| Element | Mobile | Desktop | Breakpoint |
+|:---|:---|:---|:---|
+| Homepage h1 | `text-4xl` (48px) | `text-5xl` (60px) | `md:` |
+| Page titles | `text-3xl` (38px) | `text-4xl` (48px) | `md:` |
+| Body text & cards | No change (15px–20px) | Same | — |
+ 
+> **Principle:** Only the largest display headings change size. Body text, card text, badges, and UI labels remain constant across devices.
+ 
+---
+ 
+## 10. Database Schema
+ 
+### Prisma Schema (PostgreSQL)
+ 
+The complete data model. All models use UUID primary keys for security (no enumerable IDs).
+ 
+#### User Model
+ 
+```prisma
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String
+  role          Role      @default(COLLECTOR)
+  firstName     String?
+  lastName      String?
+  avatarUrl     String?
+  emailVerified Boolean   @default(false)
+  verifyToken   String?
+  verifyExpires DateTime?
+  credits       Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+ 
+  coins         Coin[]
+  transactions  Transaction[]
+  notifications Notification[]
+  expertProfile ExpertProfile?
+ 
+  @@index([email])
+}
+ 
+enum Role {
+  COLLECTOR
+  EXPERT
+  ADMIN
+}
+```
+ 
+#### Expert Profile Model
+ 
+```prisma
+model ExpertProfile {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id])
+  bio          String?  @db.Text
+  specialties  String[] // e.g., ["ancient-greek", "modern-us", "indian-princely"]
+  credentials  String?  @db.Text
+  approved     Boolean  @default(false)
+  approvedAt   DateTime?
+  approvedBy   String?  // Admin user ID who approved
+  rating       Float    @default(0)
+  evalCount    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+ 
+  evaluations  Evaluation[]
+ 
+  @@index([approved])
+}
+```
+ 
+#### Coin Model
+ 
+```prisma
+model Coin {
+  id           String     @id @default(uuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id])
+  photoUrl     String     // Primary coin photo URL
+  photoKey     String     // Storage key for deletion/management
+  status       CoinStatus @default(DRAFT)
+ 
+  // User-provided metadata
+  title        String?    // User's name for the coin
+  metal        String?    // Gold, Silver, Copper, Bronze, etc.
+  weight       Float?     // In grams
+  diameter     Float?     // In millimeters
+  year         String?    // Minting year (string for ranges like "1800-1810")
+  country      String?    // Country of origin
+  denomination String?    // Face value / denomination
+  condition    String?    // User's assessment: Good, Fine, VF, EF, AU, UNC
+  userNotes    String?    @db.Text // Free-form user description
+ 
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+ 
+  evaluation   Evaluation?
+  showcaseItem ShowcaseItem?
+ 
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+ 
+enum CoinStatus {
+  DRAFT              // User started but hasn't submitted
+  SUBMITTED          // Submitted, awaiting payment or assignment
+  PAYMENT_PENDING    // Submitted, payment not yet confirmed
+  ASSIGNED           // Expert assigned, awaiting evaluation
+  IN_EVALUATION      // Expert is actively evaluating
+  COMPLETED          // Evaluation complete
+  REJECTED           // Admin rejected (inappropriate content, etc.)
+}
+```
+ 
+#### Evaluation Model
+ 
+```prisma
+model Evaluation {
+  id          String           @id @default(uuid())
+  coinId      String           @unique
+  coin        Coin             @relation(fields: [coinId], references: [id])
+  expertId    String
+  expert      ExpertProfile    @relation(fields: [expertId], references: [id])
+  assignedBy  String           // Admin user ID who assigned
+  assignedAt  DateTime         @default(now())
+  status      EvaluationStatus @default(ASSIGNED)
+ 
+  // Structured evaluation fields
+  origin       String?         // Country/region of origin (expert-verified)
+  era          String?         // Historical era (e.g., "Mughal Empire, 1526-1857")
+  mint         String?         // Mint of origin if identifiable
+  metalPurity  String?         // e.g., "92.5% Silver (Sterling)"
+  grade        String?         // Professional grade: AG, G, VG, F, VF, EF, AU, MS60-MS70, PF
+  rarityScore  Int?            // 1-10 scale (1 = common, 10 = unique)
+  scarcityNote String?         // Context for rarity: "Only 12 known specimens"
+  estimatedValueMin Float?     // Low estimate in USD
+  estimatedValueMax Float?     // High estimate in USD
+  valueCurrency     String?    @default("USD")
+  historicalStory   String?    @db.Text // Full narrative about the coin's history
+ 
+  // Free-form expert notes
+  expertNotes  String?         @db.Text // Additional observations, caveats, recommendations
+ 
+  completedAt  DateTime?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+ 
+  @@index([expertId])
+  @@index([status])
+}
+ 
+enum EvaluationStatus {
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  REVISION_REQUESTED
+}
+```
+ 
+#### Payment & Credits Models
+ 
+```prisma
+model CreditPack {
+  id          String   @id @default(uuid())
+  name        String   // e.g., "Starter", "Collector", "Expert Bundle"
+  credits     Int      // Number of evaluation credits
+  priceINR    Int      // Price in paise (smallest currency unit)
+  priceUSD    Int      // Price in cents
+  description String?
+  popular     Boolean  @default(false) // Highlight as "Most Popular"
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+ 
+model Transaction {
+  id              String            @id @default(uuid())
+  userId          String
+  user            User              @relation(fields: [userId], references: [id])
+  type            TransactionType
+  amountINR       Int?              // Amount in paise
+  amountUSD       Int?              // Amount in cents
+  currency        String            @default("INR")
+  credits         Int               // Credits added (purchase) or deducted (usage)
+  razorpayOrderId String?           @unique
+  razorpayPaymentId String?         @unique
+  razorpaySignature String?
+  status          TransactionStatus @default(PENDING)
+  description     String?           // e.g., "Starter Pack - 1 credit", "Evaluation: Coin #abc"
+  coinId          String?           // If type is USAGE, which coin was it for
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+ 
+  @@index([userId])
+  @@index([status])
+  @@index([razorpayOrderId])
+}
+ 
+enum TransactionType {
+  CREDIT_PURCHASE   // Bought a credit pack
+  SINGLE_EVALUATION // Paid for a single evaluation
+  CREDIT_USAGE      // Used a pre-purchased credit
+  REFUND            // Refund issued
+}
+ 
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+```
+ 
+#### Showcase Model
+ 
+```prisma
+model ShowcaseItem {
+  id           String       @id @default(uuid())
+  coinId       String       @unique
+  coin         Coin         @relation(fields: [coinId], references: [id])
+  displayMode  DisplayMode  @default(FULL)
+  featured     Boolean      @default(false) // Show on homepage
+  sortOrder    Int          @default(0)
+  adminNotes   String?      // Internal notes about why this was showcased
+  publishedAt  DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+ 
+  @@index([featured])
+  @@index([publishedAt])
+}
+ 
+enum DisplayMode {
+  FULL          // Complete evaluation visible to public
+  TEASER        // Partial evaluation — grade + photo only, details behind paywall
+  BEFORE_AFTER  // Side-by-side: user submission vs expert evaluation
+}
+```
+ 
+#### Notification Model
+ 
+```prisma
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  type      String   // "evaluation_complete", "payment_confirmed", "expert_assigned", etc.
+  title     String
+  message   String
+  data      Json?    // Additional data (coinId, evaluationId, etc.)
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+ 
+  @@index([userId, read])
+  @@index([createdAt])
+}
+```
+ 
+---
+ 
+## 11. Authentication & Authorization
+ 
+### Registration Flow
+ 
+1. User submits email + password (min 8 chars, 1 uppercase, 1 number)
+2. Server creates User with `emailVerified: false`, generates `verifyToken` (crypto-random, 64 chars)
+3. Server sends verification email with link: `https://mintmarks.in/verify-email?token={verifyToken}`
+4. User clicks link → server validates token + expiry → sets `emailVerified: true`
+5. User can now log in
+ 
+### Login Flow
+ 
+1. User submits email + password
+2. Server validates credentials + checks `emailVerified: true`
+3. Server returns: `{ accessToken (JWT, 15min), refreshToken (JWT, 7days) }`
+4. Client stores tokens (httpOnly cookie for web, SecureStore for mobile)
+5. All API requests include `Authorization: Bearer {accessToken}`
+6. When access token expires, client hits `/auth/refresh` with refresh token
+ 
+### JWT Payload
+ 
+```typescript
+interface JwtPayload {
+  sub: string;      // User ID (UUID)
+  email: string;
+  role: Role;       // COLLECTOR | EXPERT | ADMIN
+  iat: number;
+  exp: number;
+}
+```
+ 
+### Role-Based Access Control
+ 
+| Resource | COLLECTOR | EXPERT | ADMIN |
+|:---|:---|:---|:---|
+| View own coins | ✅ | ✅ | ✅ |
+| Submit coins | ✅ | ✅ | ✅ |
+| Buy credits | ✅ | ✅ | ✅ |
+| View own evaluations | ✅ | ✅ | ✅ |
+| View assigned evaluations | ❌ | ✅ | ✅ |
+| Submit evaluations | ❌ | ✅ | ✅ |
+| Manage expert profile | ❌ | ✅ | ✅ |
+| Assign experts | ❌ | ❌ | ✅ |
+| Manage users | ❌ | ❌ | ✅ |
+| Approve experts | ❌ | ❌ | ✅ |
+| Manage showcase | ❌ | ❌ | ✅ |
+| View all coins | ❌ | ❌ | ✅ |
+| View all transactions | ❌ | ❌ | ✅ |
+| Manage credit packs | ❌ | ❌ | ✅ |
+ 
+### Middleware Pattern
+ 
+```typescript
+// Auth middleware chain — applied per route
+authenticate       // Verifies JWT, attaches user to request
+requireVerified    // Checks emailVerified === true
+requireRole(...roles: Role[])  // Checks user.role is in allowed list
+```
+ 
+### Password Security
+ 
+- Hashed with bcrypt (12 salt rounds)
+- Password reset via email with time-limited token (1 hour expiry)
+- Account lockout after 5 failed login attempts (15 minute cooldown)
+- Refresh tokens stored hashed in database, revocable
+ 
+---
+ 
+## 12. API Design
+ 
+### Base URL
+ 
+```
+Production:  https://api.mintmarks.in/v1
+Development: http://localhost:4000/v1
+```
+ 
+### Standard Response Format
+ 
+```typescript
+// Success
+{
+  success: true,
+  data: T,
+  meta?: { page: number, limit: number, total: number, totalPages: number }
+}
+ 
+// Error
+{
+  success: false,
+  error: {
+    code: string,        // "VALIDATION_ERROR", "NOT_FOUND", "UNAUTHORIZED", etc.
+    message: string,     // Human-readable message
+    details?: object     // Field-level validation errors
+  }
+}
+```
+ 
+### Authentication Endpoints
+ 
+| Method | Path | Auth | Description |
+|:---|:---|:---|:---|
+| `POST` | `/auth/register` | ❌ | Register new account (email + password) |
+| `POST` | `/auth/verify-email` | ❌ | Verify email with token |
+| `POST` | `/auth/login` | ❌ | Login, receive JWT tokens |
+| `POST` | `/auth/refresh` | ❌ | Refresh access token |
+| `POST` | `/auth/forgot-password` | ❌ | Request password reset email |
+| `POST` | `/auth/reset-password` | ❌ | Reset password with token |
+| `GET` | `/auth/me` | ✅ | Get current user profile |
+| `PUT` | `/auth/me` | ✅ | Update profile (name, avatar) |
+| `PUT` | `/auth/change-password` | ✅ | Change password (requires current password) |
+ 
+### Coin Endpoints
+ 
+| Method | Path | Auth | Role | Description |
+|:---|:---|:---|:---|:---|
+| `GET` | `/coins` | ✅ | Own | List user's coins (paginated, filterable by status) |
+| `POST` | `/coins` | ✅ | Any | Create new coin (metadata only, draft status) |
+| `GET` | `/coins/:id` | ✅ | Own/Admin | Get coin details + evaluation if completed |
+| `PUT` | `/coins/:id` | ✅ | Own | Update coin metadata (only while DRAFT) |
+| `DELETE` | `/coins/:id` | ✅ | Own | Delete coin (only while DRAFT) |
+| `POST` | `/coins/:id/photo` | ✅ | Own | Upload coin photo (multipart, max 10MB, jpg/png/webp) |
+| `POST` | `/coins/:id/submit` | ✅ | Own | Submit for evaluation (deducts credit or initiates payment) |
+ 
+### Evaluation Endpoints
+ 
+| Method | Path | Auth | Role | Description |
+|:---|:---|:---|:---|:---|
+| `GET` | `/evaluations/queue` | ✅ | Expert | List evaluations assigned to this expert |
+| `GET` | `/evaluations/:id` | ✅ | Expert/Own/Admin | Get evaluation details |
+| `PUT` | `/evaluations/:id` | ✅ | Expert | Update evaluation (save draft or complete) |
+| `PUT` | `/evaluations/:id/status` | ✅ | Expert | Change status (IN_PROGRESS, COMPLETED) |
+ 
+### Payment Endpoints
+ 
+| Method | Path | Auth | Role | Description |
+|:---|:---|:---|:---|:---|
+| `GET` | `/credits/packs` | ❌ | — | List available credit packs |
+| `POST` | `/payments/create-order` | ✅ | Any | Create Razorpay order (credit pack or single eval) |
+| `POST` | `/payments/verify` | ✅ | Any | Verify Razorpay payment signature + fulfill order |
+| `POST` | `/payments/webhook` | ❌ | — | Razorpay webhook (signature-verified) |
+| `GET` | `/payments/history` | ✅ | Own | Transaction history |
+| `GET` | `/credits/balance` | ✅ | Own | Current credit balance |
+ 
+### Admin Endpoints
+ 
+| Method | Path | Auth | Role | Description |
+|:---|:---|:---|:---|:---|
+| `GET` | `/admin/dashboard` | ✅ | Admin | Dashboard stats (users, coins, evaluations, revenue) |
+| `GET` | `/admin/coins` | ✅ | Admin | All coins (paginated, filterable) |
+| `GET` | `/admin/users` | ✅ | Admin | All users (paginated, filterable by role) |
+| `GET` | `/admin/experts` | ✅ | Admin | All expert profiles |
+| `PUT` | `/admin/experts/:id/approve` | ✅ | Admin | Approve expert profile |
+| `PUT` | `/admin/experts/:id/reject` | ✅ | Admin | Reject expert profile |
+| `POST` | `/admin/assignments` | ✅ | Admin | Assign expert to a coin |
+| `GET` | `/admin/assignments` | ✅ | Admin | List all assignments with status |
+| `GET` | `/admin/transactions` | ✅ | Admin | All transactions (revenue reporting) |
+| `POST` | `/admin/showcase` | ✅ | Admin | Add coin to showcase |
+| `PUT` | `/admin/showcase/:id` | ✅ | Admin | Update showcase item (mode, featured, order) |
+| `DELETE` | `/admin/showcase/:id` | ✅ | Admin | Remove from showcase |
+| `GET` | `/admin/credit-packs` | ✅ | Admin | List credit packs |
+| `POST` | `/admin/credit-packs` | ✅ | Admin | Create credit pack |
+| `PUT` | `/admin/credit-packs/:id` | ✅ | Admin | Update credit pack |
+ 
+### Showcase Endpoints (Public)
+ 
+| Method | Path | Auth | Description |
+|:---|:---|:---|:---|
+| `GET` | `/showcase` | ❌ | Published showcase items (paginated) |
+| `GET` | `/showcase/featured` | ❌ | Featured items for homepage |
+| `GET` | `/showcase/:id` | ❌ | Single item (respects DisplayMode) |
+ 
+### Notification Endpoints
+ 
+| Method | Path | Auth | Description |
+|:---|:---|:---|:---|
+| `GET` | `/notifications` | ✅ | User's notifications (paginated) |
+| `GET` | `/notifications/unread-count` | ✅ | Count of unread |
+| `PUT` | `/notifications/:id/read` | ✅ | Mark as read |
+| `PUT` | `/notifications/read-all` | ✅ | Mark all as read |
+ 
+---
+ 
+## 13. Coin Submission Flow
+ 
+### User Journey
+ 
+```
+1. User clicks "Submit a Coin" → /submit-coin
+2. Photo Upload step:
+   - Drag & drop or file picker (web)
+   - Camera capture or gallery (mobile)
+   - Preview with crop/rotate
+   - Max 10MB, accepted: jpg, png, webp
+   - Photo uploaded to storage, URL saved to Coin record
+3. Details Form step:
+   - Title (required): "What do you call this coin?"
+   - Metal (select): Gold, Silver, Copper, Bronze, Nickel, Other
+   - Weight (number, optional): in grams
+   - Diameter (number, optional): in millimeters
+   - Year (text, optional): "1947" or "1800-1810" or "Unknown"
+   - Country (searchable select, optional): ISO country list
+   - Denomination (text, optional): "1 Rupee", "Half Crown"
+   - Condition (select, optional): Good, Fine, Very Fine, Extremely Fine,
+     About Uncirculated, Uncirculated
+   - Your Notes (textarea, optional): free-form user description
+4. Review step:
+   - Summary card showing photo + all details
+   - Edit buttons to go back to any field
+5. Payment/Submit step:
+   - If user has credits >= 1: "Use 1 credit" button → deduct → status = SUBMITTED
+   - If user has 0 credits: show two options:
+     a. "Buy credits" → redirect to /credits
+     b. "Pay for this evaluation" → Razorpay single payment → on success → SUBMITTED
+6. Confirmation:
+   - "Your coin has been submitted!" success card
+   - Status tracker showing: Submitted → Assigned → In Evaluation → Completed
+   - "You'll be notified when an expert is assigned"
+```
+ 
+### Status Tracker Component
+ 
+A horizontal (desktop) or vertical (mobile) timeline showing progress. Adapted from VägVisaren's JourneyNavigator pattern:
+ 
+| State | Visual | Label |
+|:---|:---|:---|
+| DRAFT | ⚪ Gray circle | Draft |
+| SUBMITTED | 🟡 Gold circle | Submitted |
+| PAYMENT_PENDING | 🟡 Gold pulsing | Awaiting Payment |
+| ASSIGNED | 🔵 Blue circle | Expert Assigned |
+| IN_EVALUATION | 🔵 Blue pulsing | Being Evaluated |
+| COMPLETED | ✅ Green circle with check | Evaluation Complete |
+| REJECTED | 🔴 Red circle | Rejected |
+ 
+---
+ 
+## 14. Expert Evaluation Workflow
+ 
+### Expert Dashboard
+ 
+The expert dashboard shows:
+ 
+1. **Queue** — Coins assigned to this expert, ordered by assignment date
+2. **In Progress** — Evaluations currently being worked on
+3. **Completed** — Past evaluations (read-only)
+4. **Stats** — Total evaluations, average rating, specialties
+ 
+### Evaluation Form
+ 
+When an expert opens a coin for evaluation:
+ 
+**Left panel (or top on mobile):** Coin photo (zoomable) + user-provided metadata
+ 
+**Right panel (or bottom on mobile):** Evaluation form with sections:
+ 
+**Section 1: Identification**
+- Origin (country/region): text input with autocomplete
+- Era: text input (e.g., "Mughal Empire, 1556-1605 CE")
+- Mint: text input (e.g., "Royal Mint, London")
+- Metal Purity: text input (e.g., "92.5% Silver")
+ 
+**Section 2: Grading**
+- Grade: select from numismatic scale (AG-1 through MS-70 / PF-70)
+- Condition notes: textarea
+ 
+**Section 3: Rarity & Value**
+- Rarity Score: 1-10 slider
+- Scarcity Note: textarea (e.g., "Approximately 200 known specimens")
+- Estimated Value (Min): number input in USD
+- Estimated Value (Max): number input in USD
+ 
+**Section 4: Historical Context**
+- Historical Story: rich textarea — the narrative about this coin's place in history
+ 
+**Section 5: Expert Notes**
+- Additional Notes: textarea (caveats, recommendations, similar coins to look for)
+ 
+**Actions:**
+- "Save Draft" — saves progress without completing
+- "Complete Evaluation" — validates required fields, marks COMPLETED, triggers user notification
+ 
+### Admin Assignment Interface
+ 
+Admin sees a list of SUBMITTED coins with:
+- Coin photo thumbnail + title + user info
+- "Assign Expert" button → modal showing:
+  - Available experts (filtered by specialty match if possible)
+  - Expert name, specialties, rating, current queue size
+  - "Assign" button → creates Evaluation record, coin status → ASSIGNED, notification sent to expert
+ 
+---
+ 
+## 15. Payment System
+ 
+### Razorpay Integration
+ 
+#### Credit Packs (suggested initial pricing)
+ 
+| Pack | Credits | Price (INR) | Price (USD) | Badge |
+|:---|:---|:---|:---|:---|
+| **Starter** | 1 | ₹499 | $5.99 | — |
+| **Collector** | 5 | ₹1,999 | $23.99 | Most Popular |
+| **Expert Bundle** | 10 | ₹3,499 | $41.99 | Best Value |
+ 
+> These are suggested starting prices. Admin can create/modify packs from the admin panel.
+ 
+#### Payment Flow (Credit Pack Purchase)
+ 
+```
+1. User selects a credit pack on /credits
+2. Client calls POST /payments/create-order { type: "credit_pack", packId: "..." }
+3. Server creates Razorpay Order via SDK, returns orderId + amount + key
+4. Client opens Razorpay checkout modal with orderId
+5. User completes payment (cards, UPI, netbanking, wallets)
+6. Razorpay returns paymentId + signature to client
+7. Client calls POST /payments/verify { orderId, paymentId, signature }
+8. Server verifies signature using Razorpay secret (HMAC SHA256)
+9. On success: add credits to user, create Transaction record, return updated balance
+10. On failure: return error, Transaction stays PENDING
+```
+ 
+#### Payment Flow (Single Evaluation)
+ 
+```
+1. User submits coin without credits
+2. Client calls POST /payments/create-order { type: "single_evaluation", coinId: "..." }
+3-8. Same as credit pack flow
+9. On success: coin status → SUBMITTED, create Transaction record
+```
+ 
+#### Webhook Handler
+ 
+```
+POST /payments/webhook
+- Receives async events from Razorpay (payment.captured, payment.failed, refund.created)
+- Verify webhook signature using webhook secret (HMAC SHA256)
+- Idempotent processing (check if transaction already completed before applying)
+- Handle edge cases: payment captured after client timeout, refunds
+```
+ 
+#### Pricing Page Design
+ 
+Adapted from VägVisaren's card-based pattern:
+- Three cards side-by-side (`md:grid-cols-3 gap-8`)
+- Each card: `bg-white border border-neutral-200 rounded-3xl p-8`
+- "Most Popular" card: `border-brand-400 ring-2 ring-brand-100` with gold badge
+- Each shows: pack name, credit count, price, per-evaluation cost, CTA button
+- Below cards: "Or pay per evaluation — ₹599 / $6.99 per coin"
+- Trust signals: "Secure payment via Razorpay", "Instant credit activation", lock icon
+ 
+---
+ 
+## 16. Showcase & Public Gallery
+ 
+### Three Display Modes
+ 
+#### Mode 1: Full Evaluation (Public Gallery)
+ 
+Admin-curated coins with complete evaluation visible to everyone. Purpose: demonstrate the depth and quality of expert evaluations.
+ 
+**Card design:**
+- Coin photo (hero, dark `bg-coin-display` background, `shadow-coin`)
+- Coin title + era badge
+- Expert name + credentials badge
+- Full evaluation: origin, grade, rarity score, estimated value range
+- Historical story (expandable accordion)
+- Expert notes (expandable accordion)
+ 
+#### Mode 2: Before/After
+ 
+Side-by-side showing what the user submitted vs. what the expert found. Purpose: show the transformation value of the service.
+ 
+**Card design:**
+- Split layout: "What the collector saw" (left) vs "What our expert found" (right)
+- Left: User's photo + their basic metadata (metal, weight, year)
+- Right: Expert's full evaluation with grade, rarity, value, story
+- CTA: "Get your coins evaluated →"
+ 
+#### Mode 3: Teaser
+ 
+Partial evaluation visible — enough to intrigue, not enough to satisfy. Purpose: convert visitors to paying users.
+ 
+**Card design:**
+- Coin photo (full, beautiful display)
+- Grade badge + rarity score visible
+- Value range and historical story **blurred/locked** with CSS `filter: blur(8px)` overlay
+- Overlay: "Sign up to see full evaluations" with CTA button
+- Lock icon on hidden fields
+ 
+### Showcase Page Layout
+ 
+- Hero: "The MintMarks Gallery" with subtitle — curated evaluations from around the world
+- Filter bar: by era, region, metal, grade (pill/chip buttons)
+- Grid: `md:grid-cols-2 lg:grid-cols-3 gap-8`
+- Featured items: larger card spanning 2 columns (`md:col-span-2`)
+- Pagination or "Load more" button
+ 
+### Homepage Showcase Section
+ 
+3 featured showcase items on the homepage:
+- Coin photo, title, grade badge, one-line evaluation excerpt
+- "Explore the Gallery →" CTA link
+ 
+---
+ 
+## 17. Component Architecture
+ 
+### Shared Layout Components
+ 
+#### `Navbar` (Client Component)
+- **Behavior:** Sticky (`sticky top-0 z-50`), frosted-glass (`bg-white/80 backdrop-blur-md`)
+- **Height:** Fixed `--nav-height` (64px), constrained by `max-w-[var(--max-w-content)]`
+- **Desktop (`md:+`):** Logo + nav links (How it Works, Gallery, Pricing) + auth buttons (Login / Sign Up) OR user avatar with dropdown (My Coins, Credits: X, Profile, Logout) + notification bell with unread badge
+- **Mobile (`< md:`):** Logo + hamburger → slide-out panel with nav + auth + notification count
+- **Logo:** `font-display text-2xl font-bold text-brand-900` — "MintMarks" with gold accent
+ 
+#### `Footer` (Server Component)
+- **Design:** `bg-brand-950 text-neutral-300 py-20` with progressive padding
+- **Desktop:** 4-column grid (`md:grid-cols-4 gap-12`):
+  1. Brand + tagline + "Submit your first coin" CTA (`rounded-full bg-brand-600`)
+  2. Platform links (How it Works, Pricing, Gallery, FAQ)
+  3. Company (About, Contact, Privacy Policy, Terms of Service)
+  4. Connect (social links, support email)
+- **Mobile:** Stacked single column
+- **Bottom bar:** `flex flex-col md:flex-row` — Disclaimer + copyright
+ 
+### Feature Components
+ 
+#### `CoinCard`
+- Photo with `rounded-full` container + `shadow-coin` on dark `bg-coin-display`
+- Title, metal badge (`rounded-full` pill), status badge
+- Hover: `hover:border-brand-300 hover:shadow-xl transition-all`
+ 
+#### `CoinSubmitForm`
+- Multi-step form (photo → details → review → payment)
+- Step indicator bar at top with numbered circles + connecting lines
+- Animated step transitions via framer-motion (`AnimatePresence`)
+ 
+#### `CoinStatusTracker`
+- Timeline showing evaluation progress (adapted from VägVisaren's JourneyNavigator)
+- Horizontal on desktop, vertical on mobile
+- Animated transitions between states with color changes
+ 
+#### `EvaluationViewer`
+- Structured data in labeled sections with cards
+- Expandable historical story section (accordion)
+- Expert profile card with credentials and rating
+ 
+#### `ExpertEvalForm`
+- Sectioned form with save-draft capability
+- Coin photo pinned/sticky while scrolling form on desktop
+- Zod validation before completion
+ 
+#### `CreditPackCard`
+- Price, credit count, per-eval breakdown
+- Razorpay checkout integration on click
+- "Most Popular" / "Best Value" badge variants
+ 
+#### `ShowcaseGallery`
+- Grid of showcase items with filter/sort controls
+- Three display mode renderers (FULL, TEASER, BEFORE_AFTER)
+- Responsive masonry-style grid
+ 
+#### `PaymentModal`
+- Loading state while creating Razorpay order
+- Razorpay checkout wrapper
+- Success/failure callback handling
+- Credit balance update animation
+ 
+#### `StatusBadge`
+- Maps CoinStatus / EvaluationStatus → color + label
+- Uses brand tokens: gold for pending, blue for active, green for complete, red for rejected
+- Consistent `rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider` styling
+ 
+#### `NotificationDropdown`
+- Bell icon with unread count badge (`bg-brand-500 text-white rounded-full`)
+- Pulsing animation on badge if unread > 0
+- Dropdown list with notification items, timestamps, read/unread state
+- "Mark all as read" action at bottom
+ 
+#### `DataTable` (Admin)
+- Sortable columns, pagination, search input
+- Row actions (assign, approve, view detail)
+- Responsive: horizontal scroll on mobile with sticky first column
+ 
+### UI Primitives
+ 
+| Component | Purpose |
+|:---|:---|
+| `Button` | Primary (`bg-brand-600`), secondary (`border-brand-600`), ghost, danger variants |
+| `Input` | Text input with label, error state, `bg-control rounded-md border` |
+| `Select` | Dropdown select with search capability |
+| `Badge` | Colored pill for status, category labels |
+| `Modal` | Centered overlay with backdrop blur, framer-motion enter/exit |
+| `Toast` | Success/error/info notifications, auto-dismiss |
+| `Spinner` | Loading indicator, brand gold color |
+ 
+---
+ 
+## 18. Page Architecture & Routing
+ 
+### Public Routes (No Auth Required)
+ 
+| Route | Page | Key Features |
+|:---|:---|:---|
+| `/` | Homepage | Hero with tagline, "How it Works" 3-step, featured showcase coins, pricing preview, trust stats |
+| `/how-it-works` | How It Works | Detailed 3-step process: Upload → Expert Evaluates → Receive Report |
+| `/showcase` | Public Gallery | All showcase items with filters |
+| `/showcase/:id` | Showcase Detail | Single coin evaluation (respects display mode) |
+| `/pricing` | Pricing | Credit packs + single eval pricing + FAQ accordion |
+| `/about` | About | Mission, expert standards, team |
+| `/login` | Login | Email + password form, "Forgot password?" link |
+| `/register` | Register | Registration form + "Check your email" prompt on success |
+| `/verify-email` | Verify Email | Token validation, success/error state |
+| `/forgot-password` | Forgot Password | Email input for reset link |
+| `/reset-password` | Reset Password | New password form with token from email |
+ 
+### Collector Routes (Auth Required, Role: COLLECTOR+)
+ 
+| Route | Page | Key Features |
+|:---|:---|:---|
+| `/dashboard` | Dashboard | Welcome, stats cards (coins submitted, credits, evaluations completed), recent coins list, quick action buttons |
+| `/my-coins` | My Coins | Grid of all coins with status filter tabs, search |
+| `/my-coins/:id` | Coin Detail | Full detail + evaluation result (if completed) + status tracker |
+| `/submit-coin` | Submit Coin | Multi-step submission wizard |
+| `/credits` | Buy Credits | Credit pack cards + current balance display |
+| `/payment-history` | Payment History | Transaction list with date, type, amount, status |
+| `/profile` | Profile | Edit name, avatar, email preferences |
+| `/notifications` | Notifications | Full notification list with read/unread |
+ 
+### Expert Routes (Auth Required, Role: EXPERT)
+ 
+| Route | Page | Key Features |
+|:---|:---|:---|
+| `/expert/dashboard` | Expert Dashboard | Queue count, in-progress count, completed stats, rating |
+| `/expert/queue` | Evaluation Queue | Assigned coins awaiting evaluation, ordered by date |
+| `/expert/evaluate/:coinId` | Evaluate Coin | Full evaluation form with coin photo |
+| `/expert/history` | Evaluation History | Past completed evaluations (read-only) |
+| `/expert/profile` | Expert Profile | Bio, specialties, credentials editor |
+ 
+### Admin Routes (Auth Required, Role: ADMIN)
+ 
+| Route | Page | Key Features |
+|:---|:---|:---|
+| `/admin/dashboard` | Admin Dashboard | Platform stats: total users, coins, revenue, evaluations, charts |
+| `/admin/coins` | Manage Coins | All coins table, bulk status, assignment action |
+| `/admin/coins/:id` | Coin Detail (Admin) | Full detail + assign expert action |
+| `/admin/users` | Manage Users | User list, role management, credit adjustments |
+| `/admin/experts` | Manage Experts | Expert approval queue, specialty management, performance |
+| `/admin/assignments` | Assignments | Assignment queue with status, reassignment |
+| `/admin/showcase` | Manage Showcase | Add/remove/reorder showcase items, set display mode |
+| `/admin/transactions` | Transactions | Revenue reporting, refund management |
+| `/admin/credit-packs` | Credit Packs | Create/edit pricing tiers |
+| `/admin/settings` | Settings | Platform configuration |
+ 
+### Page Layout Shell
+ 
+```tsx
+<html lang={locale}>
+<body className="font-sans bg-page text-primary antialiased">
+  <Navbar />         {/* Sticky, auth-aware, notification bell */}
+  <main>{children}</main>
+  <Footer />
+</body>
+</html>
+```
+ 
+### Page Section Pattern
+ 
+Most pages follow this structure:
+ 
+1. **Hero Section** — `bg-neutral-50 pt-16 pb-24 border-b border-neutral-200`
+   - Badge (inline-flex, `rounded-full`, `bg-brand-50 text-brand-700`)
+   - h1 heading (`font-display text-4xl md:text-5xl font-bold`)
+   - Description paragraph (`text-lg text-neutral-600 leading-relaxed`)
+   - Primary CTA button
+ 
+2. **Content Sections** — `py-16` or `py-20`
+   - Cards in grids (`grid md:grid-cols-2 gap-8` or `md:grid-cols-3 gap-6`)
+   - Each card: `bg-white border border-neutral-200 rounded-3xl p-8 hover:border-brand-300 hover:shadow-xl transition-all duration-base`
+ 
+---
+ 
+## 19. Mobile App Architecture (React Native / Expo)
+ 
+### Overview
+ 
+The mobile app covers **all three roles** (collector, expert, admin) and connects to the same backend API. Built with Expo for managed workflow and EAS Build for production.
+ 
+### Navigation Structure (expo-router)
+ 
+```
+app/
+├── (auth)/
+│   ├── login.tsx
+│   ├── register.tsx
+│   └── verify-email.tsx
+├── (tabs)/                          ← Main tab navigation (collector)
+│   ├── home.tsx                    ← Dashboard
+│   ├── my-coins/
+│   │   ├── index.tsx               ← Coin list
+│   │   └── [id].tsx                ← Coin detail
+│   ├── submit.tsx                  ← Camera/gallery → details → submit
+│   ├── credits.tsx                 ← Buy credits (Razorpay mobile SDK)
+│   └── profile.tsx                 ← Profile + notifications
+├── (expert)/                        ← Expert tab group
+│   ├── queue.tsx
+│   ├── evaluate/[coinId].tsx
+│   └── history.tsx
+├── (admin)/                         ← Admin tab group
+│   ├── dashboard.tsx
+│   ├── coins.tsx
+│   ├── assignments.tsx
+│   ├── experts.tsx
+│   └── showcase.tsx
+├── showcase/
+│   ├── index.tsx                   ← Public gallery
+│   └── [id].tsx                    ← Showcase detail
+└── _layout.tsx                     ← Root layout with auth provider
+```
+ 
+### Mobile-Specific Features
+ 
+1. **Camera Capture** — Direct coin photography with auto-focus, flash toggle, grid overlay for centering the coin
+2. **Image Picker** — Gallery selection with crop/rotate capability
+3. **Secure Token Storage** — JWT stored in `expo-secure-store` (not AsyncStorage — encrypted at rest)
+4. **Offline Draft** — Coin drafts saved locally via AsyncStorage, synced when online
+5. **Razorpay Mobile SDK** — Native checkout experience via `react-native-razorpay`
+6. **Pull-to-refresh** — On all list screens (coins, queue, notifications)
+7. **Image Zoom** — Pinch-to-zoom on coin photos in evaluation view
+ 
+### Tab Navigation by Role
+ 
+| Role | Tabs Shown |
+|:---|:---|
+| COLLECTOR | Home, My Coins, Submit, Credits, Profile |
+| EXPERT | Home, Queue, History, Profile |
+| ADMIN | Dashboard, Coins, Assignments, Experts, Profile |
+ 
+### Shared Code Strategy
+ 
+The `@mintmarks/shared` package contains types, Zod schemas, enums, and utilities used across all three platforms — ensuring a single source of truth for data shapes and validation rules.
+ 
+---
+ 
+## 20. Internationalization (i18n)
+ 
+### Architecture
+ 
+- **Library (Web):** `next-intl` v4 — locale prefix routing, server-side message loading
+- **Library (Mobile):** `i18n-js` + `expo-localization` or equivalent
+- **Default locale:** `en` (English)
+- **i18n-ready:** Architecture supports adding any language — message files are the only addition needed
+- **Initial launch:** English only
+ 
+### Message Structure
+ 
+```
+messages/
+├── en.json
+└── (future: hi.json, es.json, fr.json, etc.)
+```
+ 
+### Translation Key Namespacing
+ 
+| Namespace | Scope |
+|:---|:---|
+| `Common` | Shared strings (buttons, labels, status names, "Cancel", "Submit", etc.) |
+| `Auth` | Login, register, verification, password reset |
+| `Home` | Homepage content (hero, how-it-works, stats) |
+| `Coins` | Coin submission, detail, list, status labels |
+| `Evaluation` | Evaluation form labels, results display |
+| `Payment` | Credits, pricing page, transaction history |
+| `Showcase` | Gallery page, showcase cards |
+| `Expert` | Expert dashboard, queue, evaluation form labels |
+| `Admin` | Admin dashboard, management pages |
+| `Notifications` | Notification titles and messages |
+| `Errors` | Error messages, validation messages |
+ 
+### Currency Handling
+ 
+- All prices stored in smallest currency unit (paise for INR, cents for USD) in the database
+- Display formatted with `Intl.NumberFormat` based on user locale
+- Razorpay handles multi-currency display if configured
+ 
+---
+ 
+## 21. Notification System
+ 
+### Email Notifications
+ 
+Sent via nodemailer (provider-agnostic — configure SendGrid, AWS SES, or any SMTP).
+ 
+| Trigger | Recipient | Email Subject |
+|:---|:---|:---|
+| Registration | User | "Welcome to MintMarks — Verify your email" |
+| Email verified | User | "Your email is verified — start submitting coins!" |
+| Coin submitted | User | "Your coin has been submitted for evaluation" |
+| Expert assigned | User | "An expert has been assigned to your coin" |
+| Evaluation complete | User | "Your coin evaluation is ready!" |
+| Payment confirmed | User | "Payment confirmed — {X} credits added" |
+| Payment failed | User | "Payment could not be processed" |
+| New assignment | Expert | "New coin assigned for evaluation" |
+| Expert approved | Expert | "You've been approved as a MintMarks expert" |
+ 
+### In-App Notifications
+ 
+Stored in the `Notification` database table. Displayed via:
+- **Navbar bell icon** with unread count badge (gold `bg-brand-500`)
+- **Notification dropdown** on click (recent 10 items)
+- **Full notification page** at `/notifications` (paginated, all items)
+ 
+### Email Templates
+ 
+Styled HTML emails matching the Heritage Gold brand:
+- MintMarks logo at top
+- Clear heading in Playfair Display (web font fallback to Georgia)
+- Body text in Inter (fallback to Arial)
+- Prominent CTA button (`bg-brand-600 text-white rounded-lg`)
+- Footer with unsubscribe link + contact info
+- Responsive layout (600px max-width, mobile-friendly)
+ 
+---
+ 
+## 22. Testing Strategy
+ 
+### Unit Tests (Vitest)
+ 
+- **API services:** auth, coin CRUD, evaluation logic, payment verification, credit operations
+- **Website:** utility functions, form validation, state management, formatters
+- **Shared:** Zod schemas, format utilities, constants, grade label mapping
+ 
+### Component Tests (@testing-library)
+ 
+- **Website:** Key components (CoinCard, StatusTracker, EvaluationViewer, CreditPackCard)
+- **Mobile:** Native components (CameraCapture, CoinPhotoPreview)
+ 
+### API Integration Tests (Supertest)
+ 
+| Test Suite | Coverage |
+|:---|:---|
+| Auth flow | Register → verify → login → access protected routes → refresh token |
+| Coin flow | Create → upload photo → submit → check status change |
+| Assignment flow | Admin assigns expert → expert sees in queue → expert completes evaluation → user notified |
+| Payment flow | Create Razorpay order → verify payment → check credits added |
+| Admin flow | Approve expert → assign to coin → manage showcase |
+ 
+### E2E Tests (Playwright)
+ 
+| Test | Description |
+|:---|:---|
+| Homepage | Title, hero, showcase section, pricing preview loads |
+| Registration | Register → check email prompt → verify → login → dashboard |
+| Coin submission | Login → submit → upload photo → fill details → pay → confirmation |
+| Showcase gallery | Browse → filter → view detail → teaser shows blur |
+| Expert evaluation | Login as expert → open assigned coin → fill evaluation → complete |
+ 
+### Database Testing
+ 
+- Prisma test utilities with isolated test database (separate `DATABASE_URL`)
+- Seed scripts for consistent test data (sample users, coins, evaluations)
+- Transaction rollback pattern for test isolation
+ 
+---
+ 
+## 23. SEO & Metadata
+ 
+### Per-Page Metadata
+ 
+`generateMetadata()` for each page producing:
+- Title: "MintMarks — {Page Title}"
+- Description: Unique per page, keyword-optimized
+- Open Graph: title, description, image (coin photos for showcase pages)
+- Twitter Card: `summary_large_image`
+ 
+### Showcase SEO (High Priority)
+ 
+Individual showcase pages get rich metadata:
+- Title: "{Coin Title} — Expert Evaluation | MintMarks"
+- OG image: the coin photo
+- Structured data (JSON-LD): `Product` schema with evaluation details
+ 
+### Semantic HTML
+ 
+- Single `<h1>` per page
+- Proper heading hierarchy (h1 → h2 → h3)
+- `<nav>`, `<main>`, `<footer>`, `<section>` semantic elements
+- `alt` text on all coin images (auto-generated from coin title + metal + year)
+- `lang` attribute on `<html>` element per locale
+ 
+---
+ 
+## 24. Security Checklist
+ 
+Based on OWASP Top 10:
+ 
+| # | Threat | Mitigation |
+|:---|:---|:---|
+| A01 | Broken Access Control | Role-based middleware on every endpoint. UUID IDs prevent enumeration. Users can only access own coins/evaluations. Ownership check in service layer. |
+| A02 | Cryptographic Failures | bcrypt (12 rounds) for passwords. JWT signed with strong secret (256-bit). HTTPS enforced in production. Razorpay secrets never exposed to client. |
+| A03 | Injection | Prisma ORM (parameterized queries by default). Zod input validation on all endpoints. No raw SQL queries anywhere. |
+| A04 | Insecure Design | Rate limiting on auth endpoints (5 attempts/15 min). Email verification required before any paid action. CSRF protection on web forms. |
+| A05 | Security Misconfiguration | Helmet.js for HTTP security headers. CORS whitelist (only known domains). Environment variables for all secrets (never in code or git). |
+| A06 | Vulnerable Components | `npm audit` in CI pipeline. Dependabot or Renovate for dependency updates. Pin major versions. |
+| A07 | Auth Failures | JWT expiry (15 min access, 7 day refresh). Refresh token rotation on use. Account lockout after 5 failed attempts. Password complexity enforcement. |
+| A08 | Data Integrity | Razorpay webhook signature verification (HMAC SHA256). Payment verification on server only (never trust client). Input sanitization. |
+| A09 | Logging Failures | Structured logging (winston/pino). Log auth events, payment events, admin actions, errors. No PII in logs (mask emails, never log passwords). |
+| A10 | SSRF | No user-controlled URLs in server-side requests. Image upload validates file type via magic bytes (not just extension). Filenames are UUID-generated. |
+ 
+### Additional Security Measures
+ 
+- **File Upload Security:** Validate MIME type via magic bytes. Max 10MB. Only jpg/png/webp. Rename all files to UUID on storage. No user-controlled file paths.
+- **Rate Limiting:** 100 req/min general, 5 req/15min for auth endpoints, 10 req/min for file uploads.
+- **CORS:** Whitelist: `https://mintmarks.in`, `http://localhost:3000` (dev only), mobile app origin.
+- **Content Security Policy:** Strict CSP headers via Helmet.js.
+- **SQL Injection:** Impossible with Prisma ORM — all queries are parameterized.
+ 
+---
+ 
+## 25. Deployment & DevOps
+ 
+### Architecture-Agnostic Deployment
+ 
+No vendor lock-in. The application runs on any infrastructure that supports Node.js + PostgreSQL.
+ 
+| Component | Options | Notes |
+|:---|:---|:---|
+| **Website (Next.js)** | Vercel, AWS Amplify, Docker, any Node.js host | SSR + static generation |
+| **API (Express)** | Railway, Render, AWS EC2/ECS, Docker, any Node.js host | Stateless, horizontally scalable |
+| **Database (PostgreSQL)** | AWS RDS, Neon, Supabase (DB only), Railway, self-hosted | Managed preferred for automated backups |
+| **Image Storage** | AWS S3, Cloudinary, Backblaze B2, local filesystem | Abstracted via storage interface — swap without code changes |
+| **Mobile App** | Apple App Store + Google Play Store | Built via EAS Build (Expo Application Services) |
+ 
+### Environment Variables
+ 
+```env
+# Database
+DATABASE_URL=postgresql://user:password@host:5432/mintmarks
+ 
+# Auth
+JWT_SECRET=your-256-bit-secret-here
+JWT_REFRESH_SECRET=your-other-256-bit-secret-here
+ 
+# Razorpay
+RAZORPAY_KEY_ID=rzp_live_xxxx
+RAZORPAY_KEY_SECRET=xxxx
+RAZORPAY_WEBHOOK_SECRET=xxxx
+ 
+# Email (provider-agnostic SMTP)
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=noreply@mintmarks.in
+SMTP_PASS=xxxx
+EMAIL_FROM=MintMarks noreply@mintmarks.in
+ 
+# Storage (abstract — configure one)
+STORAGE_PROVIDER=s3  # s3 | cloudinary | local
+AWS_S3_BUCKET=mintmarks-coins
+AWS_S3_REGION=ap-south-1
+AWS_ACCESS_KEY_ID=xxxx
+AWS_SECRET_ACCESS_KEY=xxxx
+# OR
+CLOUDINARY_URL=cloudinary://xxxx
+# OR
+LOCAL_STORAGE_PATH=./uploads
+ 
+# App URLs
+API_URL=https://api.mintmarks.in
+WEB_URL=https://mintmarks.in
+NODE_ENV=production
+```
+ 
+### Monorepo Structure
+ 
+The project uses a monorepo (npm workspaces or Turborepo) with four packages:
+ 
+```
+mintmarks/
+├── packages/
+│   ├── shared/        ← @mintmarks/shared (types, schemas, constants, utils)
+│   ├── web/           ← Next.js website
+│   ├── api/           ← Express API server
+│   └── mobile/        ← React Native (Expo) app
+├── package.json       ← Root workspace config
+├── turbo.json         ← Turborepo config (optional, for parallel builds)
+└── ...
+```
+ 
+---
+ 
+## 26. File Structure Reference
+ 
+```
+mintmarks/
+├── packages/
+│   ├── shared/                             # @mintmarks/shared
+│   │   ├── src/
+│   │   │   ├── types/
+│   │   │   │   ├── user.ts                 # User, Role, ExpertProfile types
+│   │   │   │   ├── coin.ts                 # Coin, CoinStatus types
+│   │   │   │   ├── evaluation.ts           # Evaluation, EvaluationStatus types
+│   │   │   │   ├── payment.ts              # Transaction, CreditPack types
+│   │   │   │   ├── showcase.ts             # ShowcaseItem, DisplayMode types
+│   │   │   │   ├── notification.ts         # Notification types
+│   │   │   │   └── index.ts                # Re-exports
+│   │   │   ├── schemas/
+│   │   │   │   ├── auth.schema.ts          # Zod: register, login, password
+│   │   │   │   ├── coin.schema.ts          # Zod: coin create, update
+│   │   │   │   ├── evaluation.schema.ts    # Zod: evaluation form
+│   │   │   │   └── index.ts
+│   │   │   ├── constants/
+│   │   │   │   ├── statuses.ts             # CoinStatus, EvaluationStatus enums
+│   │   │   │   ├── roles.ts                # Role enum
+│   │   │   │   ├── metals.ts               # Metal options list
+│   │   │   │   ├── grades.ts               # Numismatic grade scale (AG-1 to MS-70)
+│   │   │   │   └── countries.ts            # ISO country list
+│   │   │   ├── utils/
+│   │   │   │   ├── formatCurrency.ts       # Locale-aware currency formatting
+│   │   │   │   ├── formatDate.ts           # Locale-aware date formatting
+│   │   │   │   └── gradeLabel.ts           # Grade code → human-readable label
+│   │   │   └── index.ts
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   │
+│   ├── api/                                # Express API Server
+│   │   ├── prisma/
+│   │   │   ├── schema.prisma               # Complete database schema (Section 10)
+│   │   │   ├── migrations/                 # Auto-generated migration files
+│   │   │   └── seed.ts                     # Database seeding script
+│   │   ├── src/
+│   │   │   ├── index.ts                    # Express app entry point
+│   │   │   ├── config/
+│   │   │   │   ├── database.ts             # Prisma client singleton
+│   │   │   │   ├── razorpay.ts             # Razorpay client initialization
+│   │   │   │   ├── storage.ts              # Abstract storage interface + factory
+│   │   │   │   └── email.ts                # Nodemailer transport config
+│   │   │   ├── middleware/
+│   │   │   │   ├── authenticate.ts         # JWT verification middleware
+│   │   │   │   ├── requireRole.ts          # Role-based access middleware
+│   │   │   │   ├── requireVerified.ts      # Email verification check
+│   │   │   │   ├── rateLimiter.ts          # Rate limiting configurations
+│   │   │   │   ├── upload.ts               # Multer config for file uploads
+│   │   │   │   └── errorHandler.ts         # Global error handler
+│   │   │   ├── routes/
+│   │   │   │   ├── auth.routes.ts
+│   │   │   │   ├── coin.routes.ts
+│   │   │   │   ├── evaluation.routes.ts
+│   │   │   │   ├── payment.routes.ts
+│   │   │   │   ├── showcase.routes.ts
+│   │   │   │   ├── notification.routes.ts
+│   │   │   │   └── admin.routes.ts
+│   │   │   ├── services/
+│   │   │   │   ├── auth.service.ts         # Register, login, verify, tokens
+│   │   │   │   ├── coin.service.ts         # CRUD, photo upload, submission logic
+│   │   │   │   ├── evaluation.service.ts   # Assignment, evaluation CRUD
+│   │   │   │   ├── payment.service.ts      # Razorpay orders, verification, credits
+│   │   │   │   ├── showcase.service.ts     # Showcase CRUD
+│   │   │   │   ├── notification.service.ts # Create, list, mark-read
+│   │   │   │   ├── email.service.ts        # Email template rendering + sending
+│   │   │   │   └── storage.service.ts      # File upload/download/delete (abstract)
+│   │   │   ├── templates/
+│   │   │   │   ├── verification.html       # Email verification template
+│   │   │   │   ├── evaluation-complete.html
+│   │   │   │   ├── payment-confirmed.html
+│   │   │   │   └── base.html               # Base email layout (header + footer)
+│   │   │   └── utils/
+│   │   │       ├── jwt.ts                  # Token generation/verification helpers
+│   │   │       └── crypto.ts               # Random token generation (crypto.randomBytes)
+│   │   ├── tests/
+│   │   │   ├── auth.test.ts
+│   │   │   ├── coin.test.ts
+│   │   │   ├── evaluation.test.ts
+│   │   │   ├── payment.test.ts
+│   │   │   └── setup.ts                    # Test database setup + teardown
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   │
+│   ├── web/                                # Next.js Website
+│   │   ├── messages/
+│   │   │   └── en.json                     # English translations
+│   │   ├── public/                         # Static assets (logo, OG images)
+│   │   ├── e2e/
+│   │   │   ├── auth.spec.ts
+│   │   │   ├── submission.spec.ts
+│   │   │   └── showcase.spec.ts
+│   │   ├── src/
+│   │   │   ├── middleware.ts               # next-intl locale routing middleware
+│   │   │   ├── i18n/
+│   │   │   │   ├── routing.ts              # defineRouting + createNavigation
+│   │   │   │   └── request.ts              # Server-side locale request handling
+│   │   │   ├── lib/
+│   │   │   │   ├── api.ts                  # Axios instance with auth interceptor
+│   │   │   │   └── razorpay.ts             # Razorpay checkout helper (load script, open modal)
+│   │   │   ├── stores/
+│   │   │   │   ├── authStore.ts            # Zustand: user, tokens, login/logout actions
+│   │   │   │   └── uiStore.ts              # Zustand: modals, toasts, loading states
+│   │   │   ├── hooks/
+│   │   │   │   ├── useAuth.ts              # Auth state + actions hook
+│   │   │   │   ├── useCoins.ts             # Coin list + detail fetching
+│   │   │   │   └── useNotifications.ts     # Notifications + unread count
+│   │   │   ├── components/
+│   │   │   │   ├── layout/
+│   │   │   │   │   ├── Navbar.tsx          # Sticky nav with auth + notifications
+│   │   │   │   │   ├── Footer.tsx          # 4-column dark footer
+│   │   │   │   │   ├── AuthGuard.tsx       # Redirect if not authenticated
+│   │   │   │   │   └── RoleGuard.tsx       # Redirect if wrong role
+│   │   │   │   ├── coins/
+│   │   │   │   │   ├── CoinCard.tsx
+│   │   │   │   │   ├── CoinGrid.tsx
+│   │   │   │   │   ├── CoinSubmitForm.tsx
+│   │   │   │   │   ├── CoinStatusTracker.tsx
+│   │   │   │   │   └── CoinPhotoUpload.tsx
+│   │   │   │   ├── evaluation/
+│   │   │   │   │   ├── EvaluationViewer.tsx
+│   │   │   │   │   ├── ExpertEvalForm.tsx
+│   │   │   │   │   └── EvalSummaryCard.tsx
+│   │   │   │   ├── payment/
+│   │   │   │   │   ├── CreditPackCard.tsx
+│   │   │   │   │   ├── PaymentModal.tsx
+│   │   │   │   │   └── TransactionList.tsx
+│   │   │   │   ├── showcase/
+│   │   │   │   │   ├── ShowcaseGallery.tsx
+│   │   │   │   │   ├── ShowcaseCard.tsx
+│   │   │   │   │   └── ShowcaseTeaser.tsx
+│   │   │   │   ├── admin/
+│   │   │   │   │   ├── DataTable.tsx
+│   │   │   │   │   ├── AssignmentModal.tsx
+│   │   │   │   │   └── StatsCard.tsx
+│   │   │   │   ├── ui/
+│   │   │   │   │   ├── Button.tsx
+│   │   │   │   │   ├── Input.tsx
+│   │   │   │   │   ├── Select.tsx
+│   │   │   │   │   ├── Badge.tsx
+│   │   │   │   │   ├── StatusBadge.tsx
+│   │   │   │   │   ├── Modal.tsx
+│   │   │   │   │   ├── Toast.tsx
+│   │   │   │   │   └── Spinner.tsx
+│   │   │   │   └── shared/
+│   │   │   │       ├── NotificationDropdown.tsx
+│   │   │   │       ├── NotificationBell.tsx
+│   │   │   │       └── UserAvatar.tsx
+│   │   │   ├── test/
+│   │   │   │   └── setup.tsx               # Vitest setup (jsdom, testing-library)
+│   │   │   └── app/
+│   │   │       ├── globals.css             # Design system tokens (Section 4-8)
+│   │   │       ├── icon.png                # Favicon
+│   │   │       ├── layout.tsx              # Root layout
+│   │   │       └── [locale]/
+│   │   │           ├── layout.tsx          # Locale layout (fonts, nav, footer, providers)
+│   │   │           ├── page.tsx            # Homepage
+│   │   │           ├── how-it-works/
+│   │   │           │   └── page.tsx
+│   │   │           ├── showcase/
+│   │   │           │   ├── page.tsx
+│   │   │           │   └── [id]/
+│   │   │           │       └── page.tsx
+│   │   │           ├── pricing/
+│   │   │           │   └── page.tsx
+│   │   │           ├── about/
+│   │   │           │   └── page.tsx
+│   │   │           ├── (auth)/
+│   │   │           │   ├── login/
+│   │   │           │   │   └── page.tsx
+│   │   │           │   ├── register/
+│   │   │           │   │   └── page.tsx
+│   │   │           │   ├── verify-email/
+│   │   │           │   │   └── page.tsx
+│   │   │           │   ├── forgot-password/
+│   │   │           │   │   └── page.tsx
+│   │   │           │   └── reset-password/
+│   │   │           │       └── page.tsx
+│   │   │           ├── (collector)/
+│   │   │           │   ├── dashboard/
+│   │   │           │   │   └── page.tsx
+│   │   │           │   ├── my-coins/
+│   │   │           │   │   ├── page.tsx
+│   │   │           │   │   └── [id]/
+│   │   │           │   │       └── page.tsx
+│   │   │           │   ├── submit-coin/
+│   │   │           │   │   └── page.tsx
+│   │   │           │   ├── credits/
+│   │   │           │   │   └── page.tsx
+│   │   │           │   ├── payment-history/
+│   │   │           │   │   └── page.tsx
+│   │   │           │   ├── profile/
+│   │   │           │   │   └── page.tsx
+│   │   │           │   └── notifications/
+│   │   │           │       └── page.tsx
+│   │   │           ├── (expert)/
+│   │   │           │   └── expert/
+│   │   │           │       ├── dashboard/
+│   │   │           │       │   └── page.tsx
+│   │   │           │       ├── queue/
+│   │   │           │       │   └── page.tsx
+│   │   │           │       ├── evaluate/
+│   │   │           │       │   └── [coinId]/
+│   │   │           │       │       └── page.tsx
+│   │   │           │       ├── history/
+│   │   │           │       │   └── page.tsx
+│   │   │           │       └── profile/
+│   │   │           │           └── page.tsx
+│   │   │           └── (admin)/
+│   │   │               └── admin/
+│   │   │                   ├── dashboard/
+│   │   │                   │   └── page.tsx
+│   │   │                   ├── coins/
+│   │   │                   │   ├── page.tsx
+│   │   │                   │   └── [id]/
+│   │   │                   │       └── page.tsx
+│   │   │                   ├── users/
+│   │   │                   │   └── page.tsx
+│   │   │                   ├── experts/
+│   │   │                   │   └── page.tsx
+│   │   │                   ├── assignments/
+│   │   │                   │   └── page.tsx
+│   │   │                   ├── showcase/
+│   │   │                   │   └── page.tsx
+│   │   │                   ├── transactions/
+│   │   │                   │   └── page.tsx
+│   │   │                   ├── credit-packs/
+│   │   │                   │   └── page.tsx
+│   │   │                   └── settings/
+│   │   │                       └── page.tsx
+│   │   ├── next.config.ts
+│   │   ├── tsconfig.json
+│   │   ├── vitest.config.ts
+│   │   ├── playwright.config.ts
+│   │   ├── postcss.config.mjs
+│   │   ├── eslint.config.mjs
+│   │   └── package.json
+│   │
+│   └── mobile/                             # React Native (Expo) App
+│       ├── app/
+│       │   ├── (auth)/
+│       │   │   ├── login.tsx
+│       │   │   ├── register.tsx
+│       │   │   └── verify-email.tsx
+│       │   ├── (tabs)/
+│       │   │   ├── home.tsx
+│       │   │   ├── my-coins/
+│       │   │   │   ├── index.tsx
+│       │   │   │   └── [id].tsx
+│       │   │   ├── submit.tsx
+│       │   │   ├── credits.tsx
+│       │   │   └── profile.tsx
+│       │   ├── (expert)/
+│       │   │   ├── queue.tsx
+│       │   │   ├── evaluate/
+│       │   │   │   └── [coinId].tsx
+│       │   │   └── history.tsx
+│       │   ├── (admin)/
+│       │   │   ├── dashboard.tsx
+│       │   │   ├── coins.tsx
+│       │   │   ├── assignments.tsx
+│       │   │   ├── experts.tsx
+│       │   │   └── showcase.tsx
+│       │   ├── showcase/
+│       │   │   ├── index.tsx
+│       │   │   └── [id].tsx
+│       │   └── _layout.tsx
+│       ├── components/
+│       │   ├── CameraCapture.tsx
+│       │   ├── CoinPhotoPreview.tsx
+│       │   └── ...                         # Mirrors web components for native
+│       ├── lib/
+│       │   ├── api.ts                      # Axios instance with auth interceptor
+│       │   └── secureStore.ts              # expo-secure-store wrapper
+│       ├── stores/
+│       │   └── authStore.ts                # Zustand auth store (shared pattern)
+│       ├── app.json                        # Expo config
+│       ├── package.json
+│       └── tsconfig.json
+│
+├── .env.example                            # Environment variable template
+├── .gitignore
+├── package.json                            # Root workspace config
+├── turbo.json                              # Turborepo config (optional)
+├── README.md                               # Project overview + setup instructions
+├── ROADMAP.md                              # Feature roadmap
+└── MINTMARKS-BLUEPRINT.md                  # This document
+```
+ 
+---
+ 
+## Appendix A: Homepage Wireframe (Content Blocks)
+ 
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│ NAVBAR: Logo | How it Works | Gallery | Pricing | Login | Sign Up  │
+├─────────────────────────────────────────────────────────────────────┤
+│ HERO SECTION                                                       │
+│ "Every coin has a story."                                          │
+│ "We help you discover it."                                         │
+│ [Submit Your First Coin →]      [Explore Gallery →]                │
+├─────────────────────────────────────────────────────────────────────┤
+│ HOW IT WORKS (3 cards, md:grid-cols-3)                             │
+│ ┌────────────────┐ ┌────────────────┐ ┌────────────────┐           │
+│ │  1. Upload      │ │  2. Expert     │ │  3. Report     │          │
+│ │  Photo +        │ │  Evaluates     │ │  Delivered     │          │
+│ │  Details        │ │  Your Coin     │ │  To You        │          │
+│ └────────────────┘ └────────────────┘ └────────────────┘           │
+├─────────────────────────────────────────────────────────────────────┤
+│ FEATURED SHOWCASE (3 coins from gallery)                           │
+│ ┌────────────────┐ ┌────────────────┐ ┌────────────────┐           │
+│ │ [Coin Photo]   │ │ [Coin Photo]   │ │ [Coin Photo]   │          │
+│ │ Title          │ │ Title          │ │ Title          │           │
+│ │ Grade: EF-40   │ │ Grade: MS-63   │ │ Grade: VF-30   │          │
+│ │ "See full →"   │ │ "See full →"   │ │ "See full →"   │          │
+│ └────────────────┘ └────────────────┘ └────────────────┘           │
+│ [Explore the Full Gallery →]                                       │
+├─────────────────────────────────────────────────────────────────────┤
+│ PRICING PREVIEW                                                    │
+│ "Simple, transparent pricing"                                      │
+│ ┌────────────────┐ ┌────────────────┐ ┌────────────────┐           │
+│ │ 1 Credit       │ │ 5 Credits  ★   │ │ 10 Credits     │          │
+│ │ ₹499           │ │ ₹1,999         │ │ ₹3,499         │          │
+│ │ [Buy →]        │ │ [Buy →]        │ │ [Buy →]        │          │
+│ └────────────────┘ └────────────────┘ └────────────────┘           │
+│ [View Full Pricing →]                                              │
+├─────────────────────────────────────────────────────────────────────┤
+│ TRUST SECTION                                                      │
+│ "Evaluated by certified numismatic experts"                        │
+│ [Expert count]  |  [Coins evaluated]  |  [Countries served]       │
+├─────────────────────────────────────────────────────────────────────┤
+│ FOOTER (4-column, bg-brand-950)                                    │
+│ Brand + CTA | Platform | Company | Connect                        │
+│ ─────────────────────────────────────────                          │
+│ Disclaimer · Copyright © 2026 MintMarks                            │
+└─────────────────────────────────────────────────────────────────────┘
+```
+ 
+---
+ 
+## Appendix B: Interaction Patterns Reference
+ 
+### Desktop Hover Interactions
+ 
+| Pattern | Implementation | Effect |
+|:---|:---|:---|
+| **Card hover** | `hover:border-brand-300 hover:shadow-xl hover:shadow-brand-50/50 transition-all` | Border turns gold, shadow lifts with warm tint |
+| **Icon container hover** | `group-hover:bg-brand-50 group-hover:text-brand-600 transition-colors` | Neutral → gold tint |
+| **CTA reveal** | `opacity-0 group-hover:opacity-100 transition-opacity` | Text fades in on card hover |
+| **Arrow nudge** | `group-hover:translate-x-1 transition-transform` | Arrow slides right 4px |
+| **Coin photo hover** | `group-hover:scale-105 transition-transform` | Subtle zoom |
+| **Underline** | `decoration-brand-200 group-hover:decoration-brand-600 transition-all` | Underline intensifies |
+| **Shadow lift** | `shadow-sm hover:shadow-md transition-shadow` | Card elevates |
+ 
+### Mobile Touch Interactions
+ 
+| Pattern | Implementation | Effect |
+|:---|:---|:---|
+| **Button press** | `active:scale-95` | Shrinks on press |
+| **Nav link press** | `active:scale-[0.98]` | Subtle compression |
+| **Touch targets** | Minimum `w-11 h-11` (44×44px) | Accessibility guideline |
+| **Backdrop dismiss** | Full-screen overlay, tap to close | Standard drawer pattern |
+ 
+---
+ 
+## Appendix C: Design Decisions Log
+ 
+| Decision | Choice | Rationale |
+|:---|:---|:---|
+| Separate API server | Express.js, not Next.js API routes | Serves both web and mobile. Clean separation of concerns. No vendor lock-in. Independently scalable. |
+| PostgreSQL over NoSQL | Prisma + PostgreSQL | Relational data (users → coins → evaluations). ACID transactions for payment operations. Free and open source. |
+| Razorpay over Stripe | Razorpay | Strong UPI/India support. Client preference. Competitive pricing. Good mobile SDK. |
+| React Native (Expo) | Over Flutter | Shared TypeScript/React knowledge with website. Camera/gallery built into Expo. Same Zod validation schemas. Single language across all platforms. |
+| JWT over Sessions | JWT access + refresh | Stateless API serving both web and mobile clients. Refresh token rotation for security. Works with mobile app without cookie complexity. |
+| Admin assigns experts | Not auto-assignment | Client requirement. Admin knows expert availability, expertise depth, and workload. Simpler to implement correctly. Can add auto-suggest later. |
+| Heritage Gold palette | Over Nordic Blue (VägVisaren) | Coins are gold, bronze, copper, silver — the palette should reflect the subject matter. Gold conveys premium and trust. Heritage feel for a numismatic audience. |
+| Monorepo | Over separate repos | Shared types package (`@mintmarks/shared`). Single PR for cross-cutting changes. Unified CI/CD pipeline. Turborepo for parallel builds. |
+| Email + in-app notifications | Over push notifications (v1) | Simpler architecture. No FCM/APNs setup required. Push notifications deferred to v2 when user base justifies the complexity. |
+| i18n-ready, English-only launch | Full next-intl architecture from day 1 | Adding Hindi, Spanish, or any language is just adding a translation JSON file. No architectural changes needed later. |
+| Playfair Display + Inter | Font pairing | Playfair = editorial authority (museum catalogs, auction houses). Inter = screen-optimized readability for dense data. Together they signal "expert but accessible." |
+| UUID primary keys | Over auto-increment integers | Prevents ID enumeration attacks. No information leak about entity count or creation order. Required for a system handling payment data. |
+| Abstract storage interface | Pluggable S3/Cloudinary/local | Client wants to decide image storage provider later. Interface-based design means swapping is a config change, not a code rewrite. |
+ 
+---
+ 
+> **How to use this document:** This blueprint is fully self-contained. Hand it to any developer or AI agent with the instruction: *"Generate the complete MintMarks.in repository based on this blueprint."* Every architectural decision, color hex value, component pattern, database schema, API endpoint, and feature flow is specified. The VägVisaren project was used as the structural and design philosophy reference — its card-based layouts, responsive patterns, progressive disclosure approach, and design token architecture are adapted throughout for the coin evaluation domain.

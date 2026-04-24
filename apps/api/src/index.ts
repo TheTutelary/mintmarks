@@ -4,6 +4,10 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { Role } from '@mintmarks/shared';
 
+import authRoutes from './routes/auth';
+import showcaseRoutes from './routes/showcase';
+import coinRoutes from './routes/coins';
+
 dotenv.config();
 
 const app = express();
@@ -13,6 +17,12 @@ const port = process.env.PORT || 4000;
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/showcase', showcaseRoutes);
+app.use('/api/coins', coinRoutes);
+
 
 // Health Check
 app.get('/health', (req, res) => {
