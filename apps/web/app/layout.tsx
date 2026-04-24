@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MintMarks | Heraldic Heritage & Evaluation",
+  title: "MintMarks | Every Coin Has a Story",
   description: "A cryptographically secured evaluation gallery bridging historical heritage with definitive expert authentication.",
 };
 
