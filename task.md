@@ -17,8 +17,8 @@
   - [x] Execute Task 3: Showcase Grid & Coin Cards
   - [x] Execute Task 4: Replace default page.tsx
 
-- [/] Phase 4: Database Integration & Submission
-  - [ ] Execute Task 1: Prisma Schema update (Coins)
-  - [ ] Execute Task 2: Shared Zod Schemas
-  - [ ] Execute Task 3: API Coin Controllers
-  - [ ] Execute Task 4: Frontend Submission Portal
+- [x] Phase 4: Database Integration & Submission
+  - [x] Execute Task 1: Prisma Schema update (Coins)
+  - [x] Execute Task 2: Shared Zod Schemas
+  - [x] Execute Task 3: API Coin Controllers
+  - [x] Execute Task 4: Frontend Submission Portal

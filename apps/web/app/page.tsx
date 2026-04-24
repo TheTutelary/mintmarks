@@ -11,8 +11,8 @@ export default function Home() {
       <Header />
 
       <main>
-        {/* Premium Hero Section */}
-        <section className="relative px-4 pt-24 pb-32 overflow-hidden flex flex-col items-center text-center">
+        {/* Premium Hero Section — Full Viewport */}
+        <section className="relative px-4 min-h-[calc(100vh-4rem)] overflow-hidden flex flex-col items-center justify-center text-center">
           {/* Subtle background texture */}
           <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
           
