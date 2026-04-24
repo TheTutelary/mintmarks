@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "ts-node-dev --respawn src/index.ts",
     "build": "tsc",
+    "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev"
+    "prisma:migrate": "prisma migrate dev",
+    "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
     "@mintmarks/shared": "*",
