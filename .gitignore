@@ -1,6 +1,27 @@
-.DS_Store
+# --- MintMarks Project Core ---
 node_modules/
 dist/
+.next/
 build/
-.env
 *.log
+
+# --- OS & IDE ---
+.DS_Store
+.vscode/
+.idea/
+
+# --- Environment & Secrets ---
+.env
+.env.local
+.env.*.local
+
+# --- Superpowers & Development Workflow (Isolated) ---
+.agent/
+docs/superpowers/
+task.md
+tracker.md
+
+# --- Database ---
+/apps/api/prisma/dev.db
+/apps/api/prisma/dev.db-journal
+/apps/api/prisma/migrations/
