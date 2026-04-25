@@ -20,6 +20,7 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<LoginInput>({
     resolver: zodResolver(LoginSchema),
@@ -109,6 +110,34 @@ export default function LoginPage() {
             Begin Membership
           </Link>
         </p>
+      </div>
+
+      {/* Tester Shortcuts */}
+      <div className="mt-12 pt-8 border-t border-neutral-100">
+        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest text-center mb-6 px-4">
+          🛠️ Tester Shortcuts <br/>
+          <span className="font-normal capitalize lowercase">(Requires local API or Override set)</span>
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+           <button 
+             onClick={() => { reset({ email: 'admin@mintmarks.in', password: 'password123' }); }}
+             className="px-3 py-2 text-[10px] font-bold border border-neutral-200 rounded-lg text-neutral-500 hover:bg-neutral-50 hover:text-brand-600 transition-all"
+           >
+             Admin
+           </button>
+           <button 
+             onClick={() => { reset({ email: 'expert@mintmarks.in', password: 'password123' }); }}
+             className="px-3 py-2 text-[10px] font-bold border border-neutral-200 rounded-lg text-neutral-500 hover:bg-neutral-50 hover:text-brand-600 transition-all"
+           >
+             Expert
+           </button>
+           <button 
+             onClick={() => { reset({ email: 'user@mintmarks.in', password: 'password123' }); }}
+             className="px-3 py-2 text-[10px] font-bold border border-neutral-200 rounded-lg text-neutral-500 hover:bg-neutral-50 hover:text-brand-600 transition-all"
+           >
+             Collector
+           </button>
+        </div>
       </div>
     </div>
   );
