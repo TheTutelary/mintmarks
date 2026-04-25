@@ -9,7 +9,7 @@
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "seed": "ts-node-dev seed-users.ts",
+    "seed": "ts-node-dev src/seed/users.ts",
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
