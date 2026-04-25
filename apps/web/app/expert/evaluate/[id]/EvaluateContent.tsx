@@ -48,6 +48,15 @@ export default function EvaluateContent({ id }: { id: string }) {
       rarityScore: data.rarityScore ? parseInt(data.rarityScore) : null,
     };
 
+    if (token?.startsWith('mock.')) {
+      setTimeout(() => {
+        setSubmitting(false);
+        alert('Evaluation submitted successfully! (Bypass Mode)');
+        router.push('/expert');
+      }, 1000);
+      return;
+    }
+
     try {
       const response = await fetch(getApiUrl(`/api/expert/coins/${id}/evaluations`), {
         method: 'POST',
