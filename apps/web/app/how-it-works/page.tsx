@@ -1,12 +1,9 @@
+"use client";
+
 import React, { useEffect, useState } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Camera, ClipboardList, Award, Coins } from "lucide-react";
 import Link from 'next/link';
-
-export const metadata = {
-  title: "How it Works — MintMarks",
-  description: "Submit your coin in minutes and receive a professional expert evaluation.",
-};
 
 const steps = [
   { icon: Camera, title: "Photograph your asset", desc: "Capture clear high-resolution front and back photos of your heritage coin." },
@@ -59,7 +56,7 @@ export default function HowItWorksPage() {
              <div className="relative z-10">
                 <h2 className="text-3xl font-serif font-bold mb-4">Ready to unlock the secrets of your collection?</h2>
                 <p className="text-neutral-400 mb-8 max-w-xl mx-auto italic">Join a community of elite collectors and professional numismatists.</p>
-                <Link href={isLoggedIn ? "/submit" : "/auth/register"} className="inline-block bg-brand-500 hover:bg-brand-600 text-white font-bold px-10 py-4 rounded-full transition-all shadow-lg active:scale-95">
+                <Link href={isLoggedIn ? "/submit" : "/auth/register"} className="inline-block bg-brand-500 hover:bg-brand-600 text-white font-bold px-10 py-4 rounded-full transition-all shadow-lg">
                   {isLoggedIn ? "Start Your Submission" : "Begin Your First Submission"}
                 </Link>
              </div>
