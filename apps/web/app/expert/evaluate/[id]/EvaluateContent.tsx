@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, ArrowLeft, Save, Send } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { getApiUrl } from '@/lib/api';
 
 export default function EvaluateContent({ id }: { id: string }) {
   const router = useRouter();
@@ -17,8 +18,7 @@ export default function EvaluateContent({ id }: { id: string }) {
     const fetchCoin = async () => {
       const token = localStorage.getItem('mintmarks_token');
       try {
-        const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-        const response = await fetch(`http://${apiHost}:4000/api/expert/coins`, {
+        const response = await fetch(getApiUrl('/api/expert/coins'), {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {
@@ -49,8 +49,7 @@ export default function EvaluateContent({ id }: { id: string }) {
     };
 
     try {
-      const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-      const response = await fetch(`http://${apiHost}:4000/api/expert/coins/${id}/evaluations`, {
+      const response = await fetch(getApiUrl(`/api/expert/coins/${id}/evaluations`), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

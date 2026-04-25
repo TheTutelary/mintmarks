@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { RegisterSchema, type RegisterInput, Role } from '@mintmarks/shared';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { getApiUrl } from '@/lib/api';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -33,8 +34,7 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: RegisterInput) => {
     try {
-      const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-      const response = await fetch(`http://${apiHost}:4000/api/auth/register`, {
+      const response = await fetch(getApiUrl('/api/auth/register'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

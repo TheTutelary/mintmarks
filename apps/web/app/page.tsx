@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
+import { getApiUrl } from '@/lib/api';
 import { ShieldCheck, Award, MapPin } from 'lucide-react';
 
 interface ShowcaseItem {
@@ -26,8 +27,7 @@ export default function Home() {
     const token = localStorage.getItem('mintmarks_token');
     setIsLoggedIn(!!token);
 
-    const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-    fetch(`http://${apiHost}:4000/api/showcase`)
+    fetch(getApiUrl('/api/showcase'))
       .then(res => res.json())
       .then(data => setFeaturedItems(data.filter((item: any) => item.featured).slice(0, 3)))
       .catch(() => {});

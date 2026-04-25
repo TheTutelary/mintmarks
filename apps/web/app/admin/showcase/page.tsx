@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Loader2, Plus, Sparkles, Trash2, ExternalLink } from 'lucide-react';
+import { getApiUrl } from '@/lib/api';
 
 interface ShowcaseItem {
   id: string;
@@ -25,8 +26,7 @@ export default function AdminShowcasePage() {
     const fetchShowcase = async () => {
       const token = localStorage.getItem('mintmarks_token');
       try {
-        const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-        const response = await fetch(`http://${apiHost}:4000/api/showcase`, {
+        const response = await fetch(getApiUrl('/api/showcase'), {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {
@@ -43,8 +43,7 @@ export default function AdminShowcasePage() {
   const handleDelete = async (id: string) => {
     if (!confirm('Remove this item from the public showcase?')) return;
     const token = localStorage.getItem('mintmarks_token');
-    const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-    const response = await fetch(`http://${apiHost}:4000/api/admin/showcase/${id}`, {
+    const response = await fetch(getApiUrl(`/api/admin/showcase/${id}`), {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });

@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { LoginSchema, type LoginInput } from '@mintmarks/shared';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { getApiUrl } from '@/lib/api';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,8 +30,7 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginInput) => {
     setAuthError(null);
     try {
-      const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-      const response = await fetch(`http://${apiHost}:4000/api/auth/login`, {
+      const response = await fetch(getApiUrl('/api/auth/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

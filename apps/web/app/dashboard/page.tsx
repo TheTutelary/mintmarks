@@ -5,6 +5,7 @@ import { Header } from '@/components/layout/Header';
 import { useRouter } from 'next/navigation';
 import { Loader2, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { getApiUrl } from '@/lib/api';
 
 interface Coin {
   id: string;
@@ -41,8 +42,7 @@ export default function DashboardPage() {
       }
 
       try {
-        const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-        const response = await fetch(`http://${apiHost}:4000/api/coins/my-collection`, {
+        const response = await fetch(getApiUrl('/api/coins/my-collection'), {
           headers: { 'Authorization': `Bearer ${token}` },
         });
 

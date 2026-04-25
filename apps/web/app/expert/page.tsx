@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Loader2, Coins } from 'lucide-react';
+import { getApiUrl } from '@/lib/api';
 import Link from 'next/link';
 
 export default function ExpertDashboard() {
@@ -12,8 +13,7 @@ export default function ExpertDashboard() {
     const fetchAssigned = async () => {
       const token = localStorage.getItem('mintmarks_token');
       try {
-        const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-        const response = await fetch(`http://${apiHost}:4000/api/expert/coins`, {
+        const response = await fetch(getApiUrl('/api/expert/coins'), {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {

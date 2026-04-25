@@ -5,6 +5,7 @@ import { Header } from '@/components/layout/Header';
 import { useRouter } from 'next/navigation';
 import { METALS } from '@mintmarks/shared';
 import { ChevronRight, ChevronLeft, Upload, Check, Loader2 } from 'lucide-react';
+import { getApiUrl } from '@/lib/api';
 
 const STEPS = ['Details', 'Photography', 'Review'];
 
@@ -33,8 +34,7 @@ export default function SubmitCoinPage() {
         return;
       }
 
-      const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-      const response = await fetch(`http://${apiHost}:4000/api/coins`, {
+      const response = await fetch(getApiUrl('/api/coins'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

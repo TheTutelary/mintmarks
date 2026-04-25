@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Loader2, Sparkles, CheckCircle2 } from 'lucide-react';
+import { getApiUrl } from '@/lib/api';
 
 interface Coin {
   id: string;
@@ -30,8 +31,7 @@ export default function AdminSubmissions() {
     const fetchAdminData = async () => {
       const token = localStorage.getItem('mintmarks_token');
       try {
-        const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-        const response = await fetch(`http://${apiHost}:4000/api/admin/submissions`, {
+        const response = await fetch(getApiUrl('/api/admin/submissions'), {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {
@@ -48,8 +48,7 @@ export default function AdminSubmissions() {
 
   const handleStatusChange = async (coinId: string, newStatus: string) => {
     const token = localStorage.getItem('mintmarks_token');
-    const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-    await fetch(`http://${apiHost}:4000/api/admin/coins/${coinId}/status`, {
+    await fetch(getApiUrl(`/api/admin/coins/${coinId}/status`), {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ status: newStatus })
@@ -59,8 +58,7 @@ export default function AdminSubmissions() {
 
   const handleAssignExpert = async (coinId: string, expertId: string) => {
     const token = localStorage.getItem('mintmarks_token');
-    const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-    await fetch(`http://${apiHost}:4000/api/admin/coins/${coinId}/assign`, {
+    await fetch(getApiUrl(`/api/admin/coins/${coinId}/assign`), {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ expertId })
@@ -81,8 +79,7 @@ export default function AdminSubmissions() {
     if (!story) return;
 
     const token = localStorage.getItem('mintmarks_token');
-    const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-    const response = await fetch(`http://${apiHost}:4000/api/admin/showcase`, {
+    const response = await fetch(getApiUrl('/api/admin/showcase'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({

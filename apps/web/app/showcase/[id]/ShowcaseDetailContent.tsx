@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
 import { Loader2, ArrowLeft, ShieldCheck, Award, Info } from 'lucide-react';
+import { getApiUrl } from '@/lib/api';
 
 interface ShowcaseItem {
   id: string;
@@ -29,8 +30,7 @@ export default function ShowcaseDetailContent({ id }: { id: string }) {
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-        const response = await fetch(`http://${apiHost}:4000/api/showcase/${id}`);
+        const response = await fetch(getApiUrl(`/api/showcase/${id}`));
         if (response.ok) {
           const data = await response.json();
           setItem(data);

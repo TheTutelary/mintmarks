@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
+import { getApiUrl } from '@/lib/api';
 import { Loader2, Sparkles, Building2 } from 'lucide-react';
 
 interface ShowcaseItem {
@@ -28,8 +29,7 @@ export default function ShowcaseGallery() {
   useEffect(() => {
     const fetchShowcase = async () => {
       try {
-        const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-        const response = await fetch(`http://${apiHost}:4000/api/showcase`);
+        const response = await fetch(getApiUrl('/api/showcase'));
         if (response.ok) {
           const data = await response.json();
           setItems(data);
