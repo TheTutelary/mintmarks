@@ -7,6 +7,9 @@ import { Role } from '@mintmarks/shared';
 import authRoutes from './routes/auth';
 import showcaseRoutes from './routes/showcase';
 import coinRoutes from './routes/coins';
+import mediaRoutes from './routes/media.routes';
+import expertRoutes from './routes/expert.routes';
+import adminRoutes from './routes/admin.routes';
 
 dotenv.config();
 
@@ -22,6 +25,9 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/showcase', showcaseRoutes);
 app.use('/api/coins', coinRoutes);
+app.use('/api/media', mediaRoutes);
+app.use('/api/expert', expertRoutes);
+app.use('/api/admin', adminRoutes);
 
 
 // Health Check

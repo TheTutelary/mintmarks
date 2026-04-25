@@ -33,7 +33,8 @@ export default function SubmitCoinPage() {
         return;
       }
 
-      const response = await fetch('http://localhost:4000/api/coins', {
+      const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+      const response = await fetch(`http://${apiHost}:4000/api/coins`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -12,7 +12,8 @@ export function ShowcaseGrid() {
   useEffect(() => {
     const fetchCoins = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/showcase');
+        const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+        const response = await fetch(`http://${apiHost}:4000/api/showcase`);
         if (!response.ok) throw new Error('Failed to fetch gallery');
         const data = await response.json();
         setCoins(data.coins);

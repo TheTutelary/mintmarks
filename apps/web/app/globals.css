@@ -32,6 +32,9 @@
   /* UI Tokens */
   --radius-primary: 24px; /* rounded-3xl equivalent */
   --shadow-coin: 0 4px 16px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui;
+  --font-serif: var(--font-serif), ui-serif, Georgia, serif;
 }
 
 :root {
@@ -49,5 +52,4 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif; /* Fallback until next/font is wired */
 }

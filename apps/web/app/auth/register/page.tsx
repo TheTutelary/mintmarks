@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,6 +10,12 @@ import { useRouter } from 'next/navigation';
 
 export default function RegisterPage() {
   const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem('mintmarks_token');
+    if (token) router.push('/dashboard');
+  }, [router]);
+
   const {
     register,
     handleSubmit,
@@ -27,7 +33,8 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: RegisterInput) => {
     try {
-      const response = await fetch('http://localhost:4000/api/auth/register', {
+      const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+      const response = await fetch(`http://${apiHost}:4000/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

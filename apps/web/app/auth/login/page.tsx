@@ -6,8 +6,16 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoginSchema, type LoginInput } from '@mintmarks/shared';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
+  const router = useRouter();
+
+  React.useEffect(() => {
+    const token = localStorage.getItem('mintmarks_token');
+    if (token) router.push('/dashboard');
+  }, [router]);
+
   const {
     register,
     handleSubmit,
@@ -16,9 +24,13 @@ export default function LoginPage() {
     resolver: zodResolver(LoginSchema),
   });
 
+  const [authError, setAuthError] = React.useState<string | null>(null);
+
   const onSubmit = async (data: LoginInput) => {
+    setAuthError(null);
     try {
-      const response = await fetch('http://localhost:4000/api/auth/login', {
+      const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+      const response = await fetch(`http://${apiHost}:4000/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -32,13 +44,17 @@ export default function LoginPage() {
 
       // Store token
       localStorage.setItem('mintmarks_token', result.token);
-      alert('Welcome back, ' + result.user.name);
       
-      // In full implementation, redirect to dashboard
-      // router.push('/dashboard');
+      // Force a full reload to update the Header's auth state and redirect
+      window.location.href = result.user.role === 'ADMIN' ? '/admin/submissions' : '/dashboard';
     } catch (error: any) {
-      alert(error.message);
+      setAuthError(error.message || 'Network error connecting to API');
     }
+  };
+
+  const safeSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSubmit(onSubmit)(e);
   };
 
   return (
@@ -48,7 +64,13 @@ export default function LoginPage() {
         <p className="text-neutral-500 text-sm">Access your heritage collection</p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {authError && (
+        <div className="bg-red-50 text-red-500 p-4 rounded-xl border border-red-100 text-sm font-medium text-center">
+          {authError}
+        </div>
+      )}
+
+      <form onSubmit={safeSubmit} className="space-y-4">
         <div className="space-y-1">
           <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider ml-1">Email Address</label>
           <input

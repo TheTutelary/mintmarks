@@ -25,3 +25,6 @@ tracker.md
 /apps/api/prisma/dev.db
 /apps/api/prisma/dev.db-journal
 /apps/api/prisma/migrations/
+
+# --- Samples and Temporary ---
+sample website/

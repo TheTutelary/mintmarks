@@ -16,21 +16,79 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  coins     Coin[]
+  coins         Coin[]       @relation("UserCoins")
+  assignedCoins Coin[]       @relation("ExpertCoins")
+  evaluations   Evaluation[]
 }
 
 model Coin {
-  id          String   @id @default(uuid())
-  title       String
-  description String?
-  metal       String?
-  imageUrl    String?
-  status      String   @default("DRAFT")
-  grade       String?
-  valuation   String?
-  expertName  String?
-  ownerId     String
-  owner       User     @relation(fields: [ownerId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String   @id @default(uuid())
+  title            String
+  description      String?
+  metal            String?
+  imageUrl         String?
+  status           String   @default("DRAFT")
+  grade            String?
+  valuation        String?
+  expertName       String?
+  ownerId          String
+  owner            User     @relation("UserCoins", fields: [ownerId], references: [id])
+  assignedExpertId String?
+  assignedExpert   User?    @relation("ExpertCoins", fields: [assignedExpertId], references: [id])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  photos           CoinPhoto[]
+  evaluations      Evaluation[]
+  showcaseItem     ShowcaseItem?
+}
+
+model CoinPhoto {
+  id        String   @id @default(uuid())
+  coinId    String
+  coin      Coin     @relation(fields: [coinId], references: [id], onDelete: Cascade)
+  url       String
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Evaluation {
+  id               String   @id @default(uuid())
+  coinId           String
+  coin             Coin     @relation(fields: [coinId], references: [id], onDelete: Cascade)
+  expertId         String
+  expert           User     @relation(fields: [expertId], references: [id])
+  status           String   @default("DRAFT")
+  authenticity     String?  // AUTHENTIC, LIKELY_AUTHENTIC, COUNTERFEIT
+  grade            String?
+  estimatedValueMin Float?
+  estimatedValueMax Float?
+  valueCurrency    String   @default("USD")
+  metal            String?
+  metalPurity      String?
+  mint             String?
+  era              String?
+  origin           String?
+  rarityScore      Int?
+  scarcityNote     String?
+  historicalStory  String?
+  expertNotes      String?
+  expertName       String?
+  expertCredentials String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model ShowcaseItem {
+  id               String   @id @default(uuid())
+  coinId           String   @unique
+  coin             Coin     @relation(fields: [coinId], references: [id], onDelete: Cascade)
+  title            String
+  story            String?
+  displayMode      String   @default("FULL") // FULL, TEASER
+  featured         Boolean  @default(false)
+  sortOrder        Int      @default(0)
+  publishedAt      DateTime @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }

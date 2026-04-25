@@ -41,7 +41,8 @@ export default function DashboardPage() {
       }
 
       try {
-        const response = await fetch('http://localhost:4000/api/coins/my-collection', {
+        const apiHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+        const response = await fetch(`http://${apiHost}:4000/api/coins/my-collection`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
 
