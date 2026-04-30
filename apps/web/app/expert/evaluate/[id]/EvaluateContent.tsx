@@ -78,23 +78,31 @@ export default function EvaluateContent({ id }: { id: string }) {
     }
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-brand-500" /></div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-neutral-100"><Loader2 className="w-8 h-8 animate-spin text-brand-500" /></div>;
 
   return (
-    <main className="container mx-auto max-w-5xl px-4 py-16">
-      <button onClick={() => router.back()} className="flex items-center gap-2 text-neutral-500 hover:text-neutral-900 mb-8 transition-colors">
-        <ArrowLeft className="w-4 h-4" />
-        Back to Queue
-      </button>
+    <main className="min-h-screen bg-neutral-100 pb-32">
+      <div className="bg-white/50 backdrop-blur-sm border-b border-neutral-200/60 pt-16 pb-12">
+        <div className="container mx-auto max-w-6xl px-4">
+          <button onClick={() => router.back()} className="flex items-center gap-2 text-neutral-500 hover:text-brand-600 mb-6 transition-colors text-xs font-bold uppercase tracking-widest">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Workbench
+          </button>
+          
+          <div>
+            <div className="flex items-center gap-2 text-brand-600 mb-2">
+              <span className="text-[10px] font-black uppercase tracking-[0.3em]">Analysis Mode</span>
+            </div>
+            <h1 className="font-serif-black text-4xl text-neutral-900 tracking-tight leading-none">Expert Evaluation</h1>
+            <p className="mt-3 text-neutral-500 font-serif italic text-lg">Provide a professional assessment for {coin?.title || 'Unknown Asset'}</p>
+          </div>
+        </div>
+      </div>
 
-      <div className="grid lg:grid-cols-[1fr_350px] gap-8 items-start">
-        <div className="space-y-8">
-          <section>
-            <h1 className="text-3xl font-serif font-bold text-neutral-900 mb-2">Expert Evaluation</h1>
-            <p className="text-neutral-500">Provide a professional assessment for {coin?.title || 'Unknown Asset'}</p>
-          </section>
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
+      <div className="container mx-auto max-w-6xl px-4 mt-12">
+        <div className="grid lg:grid-cols-[1fr_350px] gap-8 items-start">
+          <div className="space-y-8">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
             {/* Authenticity & Grade */}
             <div className="bg-white p-8 rounded-3xl border border-neutral-200/60 shadow-sm space-y-6">
               <h3 className="text-sm font-bold uppercase tracking-wider text-brand-600 border-b border-neutral-100 pb-4">Authenticity & Grade</h3>
@@ -206,6 +214,7 @@ export default function EvaluateContent({ id }: { id: string }) {
             <p className="text-neutral-600 text-sm italic">"{coin?.description || coin?.userNotes || 'No notes provided by the submitter.'}"</p>
           </div>
         </aside>
+      </div>
       </div>
     </main>
   );

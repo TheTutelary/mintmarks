@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
 import { getApiUrl } from '@/lib/api';
-import { ShieldCheck, Award, MapPin } from 'lucide-react';
+import { ShieldCheck, Award, MapPin, ChevronRight } from 'lucide-react';
+import { Button, Container } from '@/components/ui';
 
 interface ShowcaseItem {
   id: string;
@@ -23,165 +24,176 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Check if user is logged in
     const token = localStorage.getItem('mintmarks_token');
     setIsLoggedIn(!!token);
 
     fetch(getApiUrl('/api/showcase'))
       .then(res => res.json())
-      .then(data => setFeaturedItems(data.filter((item: any) => item.featured).slice(0, 3)))
+      .then(data => {
+        if (Array.isArray(data)) {
+          setFeaturedItems(data.filter((item: any) => item.featured).slice(0, 3));
+        }
+      })
       .catch(() => {});
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#EFEFEA]">
+    <div className="min-h-screen bg-neutral-100">
       <Header />
       
-      {/* Exact Hero Section from Initial Design */}
-      <section className="relative px-4 py-24 md:py-32 w-full flex justify-center">
-        <div className="container max-w-5xl relative z-10 text-center flex flex-col items-center">
-            
-            <div className="mb-10 inline-flex items-center gap-2 border border-[#DBB382] text-[#9A5000] px-4 py-1.5 rounded-full text-sm font-bold bg-transparent">
-              <div className="w-1.5 h-1.5 rounded-full bg-[#E58F16]" />
+      {/* Hero Section */}
+      <section className="relative px-4 py-24 md:py-32 w-full flex justify-center overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-200/20 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand-300/10 blur-[120px] rounded-full" />
+
+        <Container size="md" className="relative z-10 text-center flex flex-col items-center">
+            <div className="mb-10 inline-flex items-center gap-2 border border-brand-300 text-brand-800 px-4 py-1.5 rounded-full text-sm font-bold bg-brand-50/50 backdrop-blur-sm">
+              <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
               Showcase Gallery Now Live
             </div>
             
             <h1 
-              className="font-serif font-black text-neutral-900 tracking-tight leading-[1.1] mb-2 whitespace-nowrap" 
-              style={{ fontWeight: 900, fontSize: 'clamp(24px, 8vw, 82px)' }}
+              className="font-serif-black text-neutral-900 tracking-tight leading-[1.1] mb-2" 
+              style={{ fontSize: 'clamp(2.5rem, 8vw, 5.25rem)' }}
             >
               Every coin has a story.
             </h1>
             <h1 
-              className="font-serif italic font-black text-[#DE8618] tracking-tight leading-[1.1] mb-8 whitespace-nowrap" 
-              style={{ fontWeight: 900, fontSize: 'clamp(22px, 7vw, 75px)' }}
+              className="font-serif italic font-black text-brand-600 tracking-tight leading-[1.1] mb-8" 
+              style={{ fontWeight: 900, fontSize: 'clamp(2.25rem, 7vw, 4.75rem)' }}
             >
               We help you discover it.
             </h1>
             
             <p 
-              className="max-w-[80vw] md:max-w-[48rem] text-[#7A7A7A] font-medium leading-relaxed mb-12"
-              style={{ fontSize: 'clamp(14px, 4vw, 20px)' }}
+              className="max-w-[80vw] md:max-w-2xl text-neutral-500 font-medium leading-relaxed mb-12"
+              style={{ fontSize: 'clamp(1rem, 4vw, 1.25rem)' }}
             >
               The professional standard for numismatic authentication and historical verification. 
               Secure definitive, expert-led appraisals covering provenance, rarity, and 
               market valuation for your most significant assets.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-5 items-center justify-center w-[80vw] sm:w-full">
-              <Link 
+            <div className="flex flex-col sm:flex-row gap-5 items-center justify-center w-full">
+              <Button 
                 href={isLoggedIn ? "/submit" : "/auth/register"} 
-                className="bg-[#E69123] text-white font-bold rounded-[1.25rem] hover:bg-[#D4811B] transition-colors w-full sm:w-auto flex items-center justify-center gap-2"
-                style={{
-                  fontSize: 'clamp(14px, 4vw, 18px)',
-                  padding: 'clamp(0.75rem, 3vw, 1rem) clamp(1.5rem, 5vw, 2rem)'
-                }}
+                size="lg"
+                rightIcon={<ChevronRight className="w-5 h-5" />}
+                className="w-full sm:w-auto"
               >
-                Submit a Coin <span>›</span>
-              </Link>
-              <Link 
+                Submit a Coin
+              </Button>
+              <Button 
                 href="/showcase" 
-                className="bg-[#F3F3F3] border border-[#E5E5E5] text-neutral-900 font-bold rounded-[1.25rem] hover:bg-[#E5E5E5] transition-colors w-full sm:w-auto flex items-center justify-center"
-                style={{
-                  fontSize: 'clamp(14px, 4vw, 18px)',
-                  padding: 'clamp(0.75rem, 3vw, 1rem) clamp(1.5rem, 5vw, 2rem)'
-                }}
+                variant="outline"
+                size="lg"
+                className="w-full sm:w-auto bg-white/50 backdrop-blur-sm"
               >
                 View the Collection
-              </Link>
+              </Button>
             </div>
-            
-        </div>
+        </Container>
       </section>
 
-      {/* Value Pillars - Restored alignment, kept improved text */}
-      <section className="border-y border-neutral-200/50 bg-[#F4F4F0] py-16">
-        <div className="container mx-auto grid grid-cols-1 gap-8 px-4 sm:px-6 md:grid-cols-3 lg:px-8 max-w-6xl">
-            <div className="flex flex-col items-center text-center gap-4 px-6">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EFECE5] text-[#D0841E]">
-                <ShieldCheck className="h-8 w-8" />
+      {/* Value Pillars */}
+      <section className="border-y border-neutral-200/50 bg-neutral-50/50 py-20">
+        <Container className="grid grid-cols-1 gap-12 md:grid-cols-3">
+            <div className="flex flex-col items-center text-center gap-6 px-4 group">
+              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                <ShieldCheck className="h-10 w-10" />
               </div>
-              <h3 className="font-serif text-2xl font-black text-neutral-900">Uncompromising Integrity</h3>
-              <p className="text-neutral-600 text-[1.1rem] leading-relaxed">
+              <h3 className="font-serif-black text-2xl text-neutral-900">Uncompromising Integrity</h3>
+              <p className="text-neutral-500 text-lg leading-relaxed">
                 Independent curatorial analysis free from the conflict of interest inherent in trading.
               </p>
             </div>
-            <div className="flex flex-col items-center text-center gap-4 px-6 border-y md:border-y-0 md:border-x border-neutral-200/50 py-8 md:py-0">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EFECE5] text-[#D0841E]">
-                <Award className="h-8 w-8" />
+            
+            <div className="flex flex-col items-center text-center gap-6 px-4 border-y md:border-y-0 md:border-x border-neutral-200/50 py-12 md:py-0 group">
+              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                <Award className="h-10 w-10" />
               </div>
-              <h3 className="font-serif text-2xl font-black text-neutral-900">Expert Verification</h3>
-              <p className="text-neutral-600 text-[1.1rem] leading-relaxed">
+              <h3 className="font-serif-black text-2xl text-neutral-900">Expert Verification</h3>
+              <p className="text-neutral-500 text-lg leading-relaxed">
                 Direct connection to world-renowned numismatists and heritage experts.
               </p>
             </div>
-            <div className="flex flex-col items-center text-center gap-4 px-6">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EFECE5] text-[#D0841E]">
-                <MapPin className="h-8 w-8" />
+            
+            <div className="flex flex-col items-center text-center gap-6 px-4 group">
+              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                <MapPin className="h-10 w-10" />
               </div>
-              <h3 className="font-serif text-2xl font-black text-neutral-900">Global Perspective</h3>
-              <p className="text-neutral-600 text-[1.1rem] leading-relaxed">
+              <h3 className="font-serif-black text-2xl text-neutral-900">Global Perspective</h3>
+              <p className="text-neutral-500 text-lg leading-relaxed">
                 Tracking provenance and historical significance across centuries and continents.
               </p>
             </div>
-        </div>
+        </Container>
       </section>
 
       {/* Featured Showcase Preview */}
       {featuredItems.length > 0 && (
-        <section className="py-24 bg-[#EFEFEA]">
-          <div className="container mx-auto px-4 max-w-6xl">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-16">
+        <section className="py-24">
+          <Container>
+            <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
               <div>
-                <h2 className="font-serif text-[2.5rem] font-black text-neutral-900">Recently Verified</h2>
-                <p className="mt-2 text-neutral-600 text-lg">Discover the latest masterpieces added to our curatorial exhibition.</p>
+                <h2 className="font-serif-black text-4xl md:text-5xl text-neutral-900">Recently Verified</h2>
+                <p className="mt-4 text-neutral-500 text-xl">Discover the latest masterpieces added to our curatorial exhibition.</p>
               </div>
-              <Link href="/showcase" className="mt-4 md:mt-0 text-[#E69123] font-bold text-lg hover:text-[#C57A1A] transition-colors">
+              <Button href="/showcase" variant="ghost" className="text-brand-600 hover:text-brand-700 font-bold text-lg">
                 Explore Full Gallery →
-              </Link>
+              </Button>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
               {featuredItems.map((item) => (
-                <Link key={item.id} href={`/showcase/${item.id}`} className="group block rounded-[1.5rem] border border-neutral-200/60 bg-white p-6 hover:border-[#E8B677] hover:shadow-xl transition-all">
-                  <div className="relative aspect-square rounded-[1rem] overflow-hidden bg-neutral-100 mb-6">
+                <Link key={item.id} href={`/showcase/${item.id}`} className="group block rounded-3xl border border-neutral-200/60 bg-white p-6 hover:border-brand-300 hover:shadow-premium transition-all duration-300">
+                  <div className="relative aspect-square rounded-2xl overflow-hidden bg-neutral-900 mb-6 flex items-center justify-center">
                     <img 
                       src={item.coin.photos?.[0]?.url || item.coin.imageUrl} 
                       alt={item.title} 
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                   </div>
                   <div>
-                    <h3 className="font-serif text-[1.35rem] font-black text-neutral-900 group-hover:text-[#E69123] transition-colors leading-tight mb-2">{item.title}</h3>
-                    <div className="text-sm font-medium text-neutral-500">{item.coin.year || 'Historical'} curatorial review</div>
+                    <h3 className="font-serif-black text-xl text-neutral-900 group-hover:text-brand-600 transition-colors leading-tight mb-2">
+                      {item.title}
+                    </h3>
+                    <div className="text-sm font-bold text-neutral-400 uppercase tracking-widest">
+                      {item.coin.year || 'Historical'} Review
+                    </div>
                   </div>
                 </Link>
               ))}
             </div>
-          </div>
+          </Container>
         </section>
       )}
 
-      {/* Restored Original Footer */}
-      <footer className="border-t border-neutral-200/50 bg-[#EFEFEA]">
-        <div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8 max-w-6xl">
-          <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-            <div className="flex items-center gap-2">
-              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-[#E69123] to-[#B65D0A] shadow-md">
-                <ShieldCheck className="h-3.5 w-3.5 text-white" />
+      {/* Footer */}
+      <footer className="border-t border-neutral-200/50 bg-neutral-50">
+        <Container className="py-20">
+          <div className="flex flex-col items-center justify-between gap-10 md:flex-row">
+            <div className="flex items-center gap-3">
+              <div className="flex h-6 w-6 items-center justify-center rounded-full heritage-gradient shadow-md">
+                <ShieldCheck className="h-4 w-4 text-white" />
               </div>
-              <span className="font-serif text-[1.25rem] font-black italic text-neutral-900 leading-none">MintMarks</span>
+              <span className="font-serif italic font-black text-2xl text-neutral-900 leading-none">MintMarks</span>
             </div>
-            <nav className="flex gap-8 text-[1.05rem] font-medium text-neutral-600">
-              <Link href="/about" className="hover:text-neutral-900 transition-colors border-r border-neutral-200 pr-8">About</Link>
-              <Link href="/showcase" className="hover:text-neutral-900 transition-colors border-r border-neutral-200 pr-8">Showcase</Link>
+            
+            <nav className="flex flex-wrap justify-center gap-x-12 gap-y-4 text-base font-bold text-neutral-500">
+              <Link href="/about" className="hover:text-neutral-900 transition-colors">About</Link>
+              <Link href="/showcase" className="hover:text-neutral-900 transition-colors">Showcase</Link>
               <Link href="/faq" className="hover:text-neutral-900 transition-colors">FAQ</Link>
+              <Link href="/how-it-works" className="hover:text-neutral-900 transition-colors">Process</Link>
             </nav>
-            <div className="text-sm text-neutral-500 italic">
+            
+            <div className="text-sm text-neutral-400 font-medium">
               © {new Date().getFullYear()} MintMarks. Preserving numismatic history.
             </div>
           </div>
-        </div>
+        </Container>
       </footer>
     </div>
   );

@@ -4,10 +4,15 @@ import React, { useState } from 'react';
 import { Header } from '@/components/layout/Header';
 import { useRouter } from 'next/navigation';
 import { METALS } from '@mintmarks/shared';
-import { ChevronRight, ChevronLeft, Upload, Check, Loader2 } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Upload, Check, Loader2, Info, Camera, PenTool, ClipboardCheck } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
+import { Button, Container, Badge } from '@/components/ui';
 
-const STEPS = ['Details', 'Photography', 'Review'];
+const STEPS = [
+  { label: 'Details', icon: PenTool },
+  { label: 'Photography', icon: Camera },
+  { label: 'Review', icon: ClipboardCheck }
+];
 
 export default function SubmitCoinPage() {
   const router = useRouter();
@@ -68,174 +73,222 @@ export default function SubmitCoinPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-neutral-100">
       <Header />
 
-      <main className="container mx-auto max-w-2xl px-4 py-16">
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-serif font-bold text-neutral-900">Submit a Coin</h1>
-          <p className="text-neutral-500 mt-2">Heritage evaluation in three simple steps</p>
+      <main className="pb-32">
+        {/* Header & Progress */}
+        <div className="bg-white/50 backdrop-blur-sm border-b border-neutral-200/60 pt-16 pb-12">
+          <Container size="sm" className="text-center">
+            <h1 className="font-serif-black text-4xl text-neutral-900 mb-4 tracking-tight">Submit for Evaluation</h1>
+            <p className="text-neutral-500 font-serif italic text-lg mb-12">Heritage discovery begins with professional curatorial review.</p>
+
+            {/* Step Indicator - Constrained and Dynamic */}
+            <div className="flex items-center justify-between relative px-2 w-[75%] max-w-sm mx-auto">
+              {/* Progress Line */}
+              <div className="absolute top-5 left-6 right-6 h-0.5 bg-neutral-200 -z-10">
+                <div 
+                  className="h-full bg-brand-500 transition-all duration-500" 
+                  style={{ width: `${(step / (STEPS.length - 1)) * 100}%` }} 
+                />
+              </div>
+
+              {STEPS.map((s, i) => {
+                const Icon = s.icon;
+                const isActive = i <= step;
+                const isCurrent = i === step;
+                const isPast = i < step;
+                const canClick = isPast || (i === step + 1 && formData.title && formData.metal);
+                
+                return (
+                  <button 
+                    key={s.label} 
+                    onClick={() => canClick && setStep(i)}
+                    disabled={!canClick && i > step}
+                    className={`flex flex-col items-center gap-2 group transition-all ${!canClick && i > step ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                  >
+                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 border-2 ${
+                      isCurrent ? 'bg-brand-600 text-white border-brand-400 shadow-lg scale-110' :
+                      isActive ? 'bg-brand-50 text-brand-600 border-brand-200 group-hover:bg-brand-100' : 
+                      'bg-white text-neutral-300 border-neutral-100 group-hover:border-neutral-200'
+                    }`}>
+                      {isPast ? <Check className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
+                    </div>
+                    <span className={`text-[8px] font-black uppercase tracking-widest transition-colors ${
+                      isActive ? 'text-brand-700' : 'text-neutral-400'
+                    }`}>
+                      {s.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </Container>
         </div>
 
-        {/* Step Indicator */}
-        <div className="flex items-center justify-center gap-2 mb-12">
-          {STEPS.map((label, i) => (
-            <React.Fragment key={label}>
-              <div className="flex items-center gap-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
-                  i <= step ? 'bg-brand-500 text-white' : 'bg-neutral-200 text-neutral-400'
-                }`}>
-                  {i < step ? <Check className="w-4 h-4" /> : i + 1}
-                </div>
-                <span className={`text-sm font-medium hidden sm:inline ${
-                  i <= step ? 'text-brand-700' : 'text-neutral-400'
-                }`}>{label}</span>
-              </div>
-              {i < STEPS.length - 1 && (
-                <div className={`w-12 h-0.5 ${i < step ? 'bg-brand-500' : 'bg-neutral-200'}`} />
-              )}
-            </React.Fragment>
-          ))}
-        </div>
+        <Container size="sm" className="mt-8">
+          <div className="bg-white border border-neutral-200/60 shadow-premium rounded-[2.5rem] overflow-hidden">
+            <div className="p-8 md:p-10">
+              {/* Step 1: Details */}
+              {step === 0 && (
+                <div className="grid gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest ml-1">Historical Designation</label>
+                      <input
+                        type="text"
+                        value={formData.title}
+                        onChange={(e) => updateField('title', e.target.value)}
+                        placeholder="e.g., 1862 Victoria Rupee"
+                        className="w-full bg-neutral-50 border border-neutral-100 rounded-xl px-5 py-3 text-neutral-900 font-bold placeholder:text-neutral-300 placeholder:font-medium focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all"
+                      />
+                    </div>
 
-        <div className="bg-white border border-neutral-200/60 shadow-coin rounded-3xl p-8">
-          {/* Step 1: Details */}
-          {step === 0 && (
-            <div className="space-y-5">
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider ml-1">Coin Title</label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => updateField('title', e.target.value)}
-                  placeholder="e.g., 1862 Victoria Rupee"
-                  className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
-                />
-              </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest ml-1">Primary Material</label>
+                      <select
+                        value={formData.metal}
+                        onChange={(e) => updateField('metal', e.target.value)}
+                        className="w-full bg-neutral-50 border border-neutral-100 rounded-xl px-5 py-3 text-neutral-900 font-bold focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all appearance-none cursor-pointer"
+                      >
+                        <option value="" className="font-medium text-neutral-400">Select Composition...</option>
+                        {METALS.map((metal) => (
+                          <option key={metal} value={metal}>{metal}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider ml-1">Metal Type</label>
-                <select
-                  value={formData.metal}
-                  onChange={(e) => updateField('metal', e.target.value)}
-                  className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 text-neutral-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
-                >
-                  <option value="">Select a metal</option>
-                  {METALS.map((metal) => (
-                    <option key={metal} value={metal}>{metal}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider ml-1">Description & Historical Context</label>
-                <textarea
-                  rows={4}
-                  value={formData.description}
-                  onChange={(e) => updateField('description', e.target.value)}
-                  placeholder="Provide provenance, era, mint marks, and any known history..."
-                  className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Step 2: Photography */}
-          {step === 1 && (
-            <div className="space-y-5">
-              <div className="border-2 border-dashed border-neutral-200 rounded-2xl p-12 text-center hover:border-brand-400 transition-colors cursor-pointer">
-                <Upload className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
-                <p className="text-neutral-500 font-medium">Drop high-res photos here</p>
-                <p className="text-neutral-400 text-sm mt-1">or paste an image URL below</p>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider ml-1">Image URL</label>
-                <input
-                  type="url"
-                  value={formData.imageUrl}
-                  onChange={(e) => updateField('imageUrl', e.target.value)}
-                  placeholder="https://example.com/coin-photo.jpg"
-                  className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
-                />
-              </div>
-
-              {formData.imageUrl && (
-                <div className="mt-4 rounded-2xl overflow-hidden bg-neutral-900 p-4">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={formData.imageUrl} alt="Preview" className="w-full max-h-64 object-contain rounded-xl" />
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Step 3: Review */}
-          {step === 2 && (
-            <div className="space-y-6">
-              <h3 className="font-serif text-xl font-bold text-neutral-900">Review Your Submission</h3>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Title</p>
-                  <p className="text-neutral-900 font-medium mt-1">{formData.title || '—'}</p>
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Metal</p>
-                  <p className="text-neutral-900 font-medium mt-1">{formData.metal || '—'}</p>
-                </div>
-              </div>
-              
-              <div>
-                <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Description</p>
-                <p className="text-neutral-700 mt-1 text-sm leading-relaxed">{formData.description || 'No description provided.'}</p>
-              </div>
-
-              {formData.imageUrl && (
-                <div className="rounded-2xl overflow-hidden bg-neutral-900 p-4">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={formData.imageUrl} alt="Preview" className="w-full max-h-48 object-contain rounded-xl" />
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest ml-1">Narrative & Context</label>
+                    <textarea
+                      rows={4}
+                      value={formData.description}
+                      onChange={(e) => updateField('description', e.target.value)}
+                      placeholder="Describe provenance, era, markings, and known history..."
+                      className="w-full bg-neutral-50 border border-neutral-100 rounded-xl px-5 py-3 text-neutral-900 font-bold placeholder:text-neutral-300 placeholder:font-medium focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all resize-none"
+                    />
+                  </div>
                 </div>
               )}
 
-              <div className="bg-brand-50 border border-brand-200 rounded-xl p-4 text-sm text-brand-800">
-                <p className="font-bold">What happens next?</p>
-                <p className="mt-1 opacity-80">Your coin will be reviewed by a certified numismatic expert. You&apos;ll receive a detailed evaluation report including grade, valuation, and historical significance.</p>
+              {/* Step 2: Photography */}
+              {step === 1 && (
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div className="grid md:grid-cols-2 gap-6 items-start">
+                    <div className="group border-2 border-dashed border-neutral-100 rounded-2xl p-8 text-center hover:border-brand-300 hover:bg-brand-50/10 transition-all duration-300 cursor-pointer h-full flex flex-col justify-center">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-50 text-neutral-300 mx-auto mb-4 group-hover:scale-110 group-hover:bg-brand-50 group-hover:text-brand-500 transition-all duration-300">
+                        <Upload className="w-6 h-6" />
+                      </div>
+                      <h3 className="text-lg font-serif-black text-neutral-900 mb-1">High-Res Capture</h3>
+                      <p className="text-neutral-400 text-[10px] font-bold uppercase tracking-widest">Drop assets here</p>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest ml-1">Digital Asset URL</label>
+                        <input
+                          type="url"
+                          value={formData.imageUrl}
+                          onChange={(e) => updateField('imageUrl', e.target.value)}
+                          placeholder="https://..."
+                          className="w-full bg-neutral-50 border border-neutral-100 rounded-xl px-5 py-3 text-neutral-900 font-bold placeholder:text-neutral-300 placeholder:font-medium focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all"
+                        />
+                      </div>
+                      
+                      {formData.imageUrl && (
+                        <div className="relative aspect-video rounded-xl overflow-hidden bg-neutral-900 flex items-center justify-center shadow-lg border border-neutral-200">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-contain" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 3: Review */}
+              {step === 2 && (
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div className="grid md:grid-cols-2 gap-8 items-start">
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-[9px] font-black text-neutral-400 uppercase tracking-widest mb-1">Designation</p>
+                          <p className="text-neutral-900 font-bold text-sm truncate">{formData.title || 'Awaiting Title'}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-black text-neutral-400 uppercase tracking-widest mb-1">Composition</p>
+                          <p className="text-brand-700 font-bold text-sm">{formData.metal || 'Not Specified'}</p>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <p className="text-[9px] font-black text-neutral-400 uppercase tracking-widest mb-2">Context</p>
+                        <p className="text-neutral-700 text-sm font-serif italic leading-relaxed border-l-2 border-brand-100 pl-4 py-0.5 line-clamp-3">
+                          {formData.description || 'No narrative provided.'}
+                        </p>
+                      </div>
+
+                      <div className="bg-brand-50 rounded-2xl p-4 border border-brand-100 flex gap-4">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-100 text-brand-600">
+                          <Info className="w-4 h-4" />
+                        </div>
+                        <p className="text-brand-800/80 text-[11px] leading-relaxed">
+                          Your asset will be cataloged and assigned to a specialist for formal board evaluation.
+                        </p>
+                      </div>
+                    </div>
+
+                    {formData.imageUrl && (
+                      <div className="aspect-square rounded-2xl overflow-hidden bg-neutral-900 p-6 flex items-center justify-center shadow-lg border border-neutral-200">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-contain drop-shadow-xl" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Navigation Buttons */}
+              <div className="flex items-center justify-between mt-8 pt-6 border-t border-neutral-100">
+                {step > 0 ? (
+                  <Button
+                    onClick={() => setStep(step - 1)}
+                    variant="ghost"
+                    size="sm"
+                    leftIcon={<ChevronLeft className="w-4 h-4" />}
+                    className="text-neutral-400 hover:text-neutral-900"
+                  >
+                    Back
+                  </Button>
+                ) : (
+                  <div />
+                )}
+
+                {step < STEPS.length - 1 ? (
+                  <Button
+                    onClick={() => setStep(step + 1)}
+                    disabled={step === 0 && (!formData.title || !formData.metal)}
+                    size="md"
+                    rightIcon={<ChevronRight className="w-4 h-4" />}
+                  >
+                    Continue
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleSubmit}
+                    isLoading={submitting}
+                    size="md"
+                    className="px-8"
+                  >
+                    Submit
+                  </Button>
+                )}
               </div>
             </div>
-          )}
-
-          {/* Navigation Buttons */}
-          <div className="flex justify-between mt-8 pt-6 border-t border-neutral-100">
-            {step > 0 ? (
-              <button
-                onClick={() => setStep(step - 1)}
-                className="flex items-center gap-2 text-neutral-500 hover:text-neutral-900 font-medium transition-colors"
-              >
-                <ChevronLeft className="w-4 h-4" /> Back
-              </button>
-            ) : (
-              <div />
-            )}
-
-            {step < STEPS.length - 1 ? (
-              <button
-                onClick={() => setStep(step + 1)}
-                disabled={step === 0 && (!formData.title || !formData.metal)}
-                className="bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300 disabled:cursor-not-allowed text-white font-bold px-6 py-3 rounded-xl transition-all flex items-center gap-2"
-              >
-                Next <ChevronRight className="w-4 h-4" />
-              </button>
-            ) : (
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300 text-white font-bold px-8 py-3 rounded-xl transition-all flex items-center gap-2"
-              >
-                {submitting ? <Loader2 className="animate-spin w-5 h-5" /> : 'Submit for Evaluation'}
-              </button>
-            )}
           </div>
-        </div>
+        </Container>
       </main>
     </div>
   );
